@@ -1,0 +1,19 @@
+services:
+  llamacpp-server:
+    image: ghcr.io/ggerganov/llama.cpp:server
+    ports:
+      - 8080:8080
+    volumes:
+      - ./models:/models
+    command: --lora /models/Vikhr-Llama-3.2-1B-Instruct-Summary-Adapter-q8_0.gguf
+    environment:
+      LLAMA_ARG_MODEL: /models/Vikhr-Llama-3.2-1B-Q8_0.gguf
+      LLAMA_ARG_CTX_SIZE: 2048
+      LLAMA_ARG_PORT: 8080
+
+  summarizer:
+    build:
+      context: ./backend/summarizer
+      dockerfile: Dockerfile
+    ports:
+      - "0.0.0.0:8000:8000"
