@@ -16,20 +16,15 @@ const modules = {
 export const DocEditor = ({ fileUrl }: IDocEditor): ReactElement => {
   const [content, setContent] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
-  const [doc, setDoc] = useState<any>(null);
 
-  // Загружаем и парсим .docx файл
   useEffect(() => {
     const fetchDocx = async () => {
       try {
         const response = await axios.get(fileUrl, { responseType: 'arraybuffer' });
         const arrayBuffer = response.data;
 
-        // Конвертируем .docx в HTML с помощью Mammoth
         const result = await mammoth.convertToHtml({ arrayBuffer });
         setContent(result.value);
-
-        setDoc(arrayBuffer); // Сохраняем исходный документ
       } catch (error) {
         console.error('Error loading the document:', error);
       } finally {
