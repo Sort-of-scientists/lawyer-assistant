@@ -6,9 +6,8 @@ from typing import List, Dict, Any
 
 from pydantic import BaseModel
 
-from dependencies.models import SamplingParams
-from dependencies.utils import get_response_from_llamacpp_server
-from dependencies.constants import LLAMACPP_SERVER_ENDPOINT
+from common.llm.models import SamplingParams
+from common.llm.utils import get_completion
 
 
 class InputModel(BaseModel):
@@ -107,7 +106,7 @@ def summarize(input: InputModel, n_sentences_to_keep: int = 2) -> OutputModel:
     # preprocess input text
     text = get_preprocessed_text(text=input.text)
     # make request to llama.cpp server
-    summary = get_response_from_llamacpp_server(prompt=text, params=input.params.model_dump())
+    summary = get_completion(prompt=text, params=input.params.model_dump())
     # reduce summary
     summary = get_reduced_summary(summary=summary, n_sentences_to_keep=n_sentences_to_keep)
 

@@ -1,12 +1,12 @@
 FROM python:3.10-slim
 
-WORKDIR /llm
+WORKDIR /backend
 
-COPY requirements.txt /llm
+COPY requirements.txt /backend
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /llm
+COPY . /backend
 
 EXPOSE 8000
 
