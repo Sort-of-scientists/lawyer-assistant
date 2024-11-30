@@ -1,4 +1,4 @@
-import React, { type ReactElement, useState } from 'react';
+import React, { type ReactElement } from 'react';
 import { Button, Modal } from 'antd';
 import styled from 'styled-components';
 import { BaseInput } from '@/features/input/BaseInput.tsx';
