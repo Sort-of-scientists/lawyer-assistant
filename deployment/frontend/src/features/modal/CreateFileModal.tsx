@@ -66,44 +66,42 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
             <Wrapper>
               <Container>
                 <Form onSubmit={handleSubmit}>
-                  <Container>
-                    <Text>Продавец</Text>
-                    <BaseInput
-                      type="seller"
-                      name="seller"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      placeholder={'Имя продавца'}
-                      value={values.seller}
-                    />
-                    <Text>Покупатель</Text>
-                    <BaseInput
-                      type="buyer"
-                      name="buyer"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.buyer}
-                      placeholder={'Имя покупателя'}
-                    />
-                    <Text>Цена</Text>
-                    <BaseInput
-                      type="price"
-                      name="price"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.price}
-                      placeholder={'Стоимость товара'}
-                    />
-                    <Text> Предмет договора</Text>
-                    <TextArea
-                      type="subject"
-                      name="subject"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.subject}
-                      placeholder={'Напишите о своей предметной области'}
-                    />
-                  </Container>
+                  <Text>Продавец</Text>
+                  <BaseInput
+                    type="seller"
+                    name="seller"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder={'Имя продавца'}
+                    value={values.seller}
+                  />
+                  <Text>Покупатель</Text>
+                  <BaseInput
+                    type="buyer"
+                    name="buyer"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.buyer}
+                    placeholder={'Имя покупателя'}
+                  />
+                  <Text>Цена</Text>
+                  <BaseInput
+                    type="price"
+                    name="price"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.price}
+                    placeholder={'Стоимость товара'}
+                  />
+                  <Text> Предмет договора</Text>
+                  <TextArea
+                    type="subject"
+                    name="subject"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.subject}
+                    placeholder={'Напишите о своей предметной области'}
+                  />
                 </Form>
               </Container>
             </Wrapper>
@@ -119,6 +117,9 @@ const Text = styled.h1`
   line-height: 2;
   font-size: 1.1rem;
   text-align: left;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
 `;
 
 const Container = styled.div`
