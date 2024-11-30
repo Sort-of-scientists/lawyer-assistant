@@ -15,7 +15,7 @@ export const MainPageInfo = (): ReactElement => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [fileType, setFileType] = useState<SelectProps['options']>([]);
-  const [chooseFileType, setChooseFileType] = useState<SelectProps['options']>([]);
+  const [chooseFileType, setChooseFileType] = useState<{ value: string }>({ value: 'Загрузка' });
 
   useEffect(() => {
     let isMounted = true;
@@ -45,14 +45,26 @@ export const MainPageInfo = (): ReactElement => {
     setOpen(true);
   };
 
-  const handlerEditOnClick = (value: ICreateDocument) => {
-    console.log('value', value);
+  const handlerEditOnClick = (value: ICreateDocument): void => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setOpen(false);
-      navigate(DOCUMENTS);
-    }, 3000);
+    const fields = {};
+    let i = 0;
+    for (const objElement of Object.values(value)) {
+      i += 1;
+      fields[`additionalProp${i}`] = objElement;
+    }
+    const params = {
+      n_predict: 100,
+      temperature: 0.01,
+    };
+    const data = { type: chooseFileType.value, fields: { ...fields }, params };
+    console.log('data', data);
+    void (async (): Promise<void> => {
+      await axios
+        .post(`${import.meta.env.VITE_API_URL}/generate`, data)
+        .then(() => navigate(DOCUMENTS))
+        .catch(e => messageApi.error(`Ошибка создания файла: ${e}`));
+    })();
   };
 
   return (
