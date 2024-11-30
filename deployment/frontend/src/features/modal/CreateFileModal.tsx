@@ -2,8 +2,9 @@ import React, { type ReactElement } from 'react';
 import { Button, Form, Modal } from 'antd';
 import { BaseInput } from '@/features/input/BaseInput.tsx';
 import styled from 'styled-components';
-import { Formik, FieldArray } from 'formik';
+import { Formik, FieldArray, FormikTouched, FormikValues, FormikErrors } from 'formik';
 import TextArea from 'antd/es/input/TextArea';
+import * as Yup from 'yup';
 
 export interface ICreateDocument {
   seller: string;
@@ -28,24 +29,36 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
     customFields: [],
   };
 
-  const validate = (values: ICreateDocument) => {
-    const errors: Partial<ICreateDocument> = {};
-    if (!values.seller) errors.seller = 'Продавец обязателен';
-    if (!values.buyer) errors.buyer = 'Покупатель обязателен';
-    if (!values.price) errors.price = 'Цена обязательна';
-    if (!values.subject) errors.subject = 'Предмет договора обязателен';
-    return errors;
-  };
-
   const onSubmit = (values, { setSubmitting }) => {
     console.log(JSON.stringify(values, null, 2));
     setSubmitting(false);
     handleOk(values as ICreateDocument);
   };
+  const validationSchema = Yup.object().shape({
+    seller: Yup.string().required('Продавец обязателен'),
+    buyer: Yup.string().required('Покупатель обязателен'),
+    price: Yup.string().required('Цена обязательна'),
+    subject: Yup.string().required('Предмет договора обязателен'),
+    customFields: Yup.array()
+      .of(
+        Yup.object().shape({
+          name: Yup.string().required('Название обязательно'),
+          value: Yup.string().required('Значение обязательно'),
+        }),
+      )
+      .required('Кастомные поля обязательны'),
+  });
 
+  const handlerError = (
+    touched: FormikTouched<FormikValues>,
+    errors: FormikErrors<FormikValues>,
+    filed: string,
+  ) => {
+    return errors[filed] && touched[filed] && <Error>Поле обязательное для заполения!</Error>;
+  };
   return (
     <>
-      <Formik initialValues={initialValues} validate={validate} onSubmit={onSubmit}>
+      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {({
           values,
           errors,
@@ -60,7 +73,7 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
             open={open}
             title={<TitleWrapper>Создать документ</TitleWrapper>}
             onCancel={handleCancel}
-            width={400}
+            width={700}
             style={{ textAlign: 'center' }}
             footer={[
               <StyledButton
@@ -77,6 +90,7 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
             <Wrapper>
               <Container>
                 <Form>
+                  {handlerError(touched, errors, 'seller')}
                   <Text>Продавец</Text>
                   <BaseInput
                     name="seller"
@@ -85,6 +99,7 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
                     value={values.seller}
                     placeholder="Имя продавца"
                   />
+                  {handlerError(touched, errors, 'buyer')}
                   <Text>Покупатель</Text>
                   <BaseInput
                     name="buyer"
@@ -93,6 +108,7 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
                     value={values.buyer}
                     placeholder="Имя покупателя"
                   />
+                  {handlerError(touched, errors, 'price')}
                   <Text>Цена</Text>
                   <BaseInput
                     name="price"
@@ -101,6 +117,7 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
                     value={values.price}
                     placeholder="Стоимость товара"
                   />
+                  {handlerError(touched, errors, 'subject')}
                   <Text>Предмет договора</Text>
                   <TextArea
                     name="subject"
@@ -115,6 +132,11 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
                       <>
                         {values.customFields.map((field, index) => (
                           <CustomField key={index}>
+                            {errors.customFields &&
+                              errors.customFields[index] &&
+                              errors.customFields[index].name && (
+                                <Error>Кастомные поля обязательны</Error>
+                              )}
                             <BaseInput
                               name={`customFields[${index}].name`}
                               placeholder="Название"
@@ -122,6 +144,11 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
                               onBlur={handleBlur}
                               value={field.name}
                             />
+                            {errors.customFields &&
+                              errors.customFields[index] &&
+                              errors.customFields[index].value && (
+                                <Error>Кастомные поля обязательны</Error>
+                              )}
                             <BaseInput
                               name={`customFields[${index}].value`}
                               placeholder="Значение"
@@ -149,6 +176,11 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
     </>
   );
 };
+
+const Error = styled.div`
+  color: var(--error-color);
+  line-height: 1;
+`;
 
 const Text = styled.h1`
   all: unset;
