@@ -10,9 +10,9 @@ from datetime import datetime
 from .models import Document
 
 
-client = MongoClient(os.environ.get("MONGO_URI"))
-database = client[os.environ.get("MONGO_DATABASE")]
-collection = database[os.environ.get("MONGO_COLLECTION")]
+# client = MongoClient(os.environ.get("MONGO_URI"))
+# database = client[os.environ.get("MONGO_DATABASE")]
+# collection = database[os.environ.get("MONGO_COLLECTION")]
 
 
 def upload_document(document: Document):
