@@ -1,28 +1,48 @@
-import React, { type ReactElement, useState } from 'react';
+import React, { type ReactElement, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { DocumentSvg } from '@/shared/svg/document.svg.tsx';
-import { Button, theme } from 'antd';
+import { Button, message, theme } from 'antd';
 import { IDocumentData } from '@/shared/data/document.data.ts';
-import { DeleteOutlined } from '@ant-design/icons';
+import { CloudDownloadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { EditFileModal } from '@/features/modal/EditFileModal.tsx';
+import { IDocumentObject } from '@/shared/interfaces/document.interface.ts';
+import axios from 'axios';
+import { downloadFile } from '@/shared/utils/utils.ts';
 
 interface IDocumentElement {
-  elem: IDocumentData;
+  elem: IDocumentObject;
 }
 export const DocumentElement = ({ elem }: IDocumentElement): ReactElement => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const handleCancel = () => {
+  useEffect(() => {
+    if (loading) {
+      void messageApi.loading({ content: 'Скачивание файла', duration: 9000 });
+    }
+  }, [loading]);
+  const onClickDownload = (): void => {
+    void (async (): Promise<void> => {
+      const response = (
+        await axios.get(`${import.meta.env.VITE_API_URL}/download?document_id=${elem.id}`, {
+          responseType: 'blob',
+          headers: { 'Content-Type': 'application/json' },
+        })
+      ).data;
+      downloadFile(response, `${elem.info?.header?.replace('.txt', '')}.docx`);
+    })();
+  };
+  const handleCancel = (): void => {
     setOpen(false);
   };
 
-  const showModal = () => {
+  const showModal = (): void => {
     if (loading) return;
     setOpen(true);
   };
 
-  const handlerEditOnClick = () => {
+  const handlerEditOnClick = (): void => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -32,13 +52,14 @@ export const DocumentElement = ({ elem }: IDocumentElement): ReactElement => {
 
   return (
     <DocumentWrapper>
+      {contextHolder}
       <EditFileModal handleCancel={handleCancel} open={open} handleOk={handlerEditOnClick} />
       <DocumentIconStyles>
         <DocumentSvg />
       </DocumentIconStyles>
       <InfoWrapper>
-        <Text>{elem.title}</Text>
-        <Description>{elem.description}</Description>
+        <Text>{elem.info.header}</Text>
+        <Description>{elem.info.description}</Description>
         <ButtonWrapper>
           <StyledButton onClick={showModal} color="default" variant="filled">
             Редактировать
@@ -51,9 +72,19 @@ export const DocumentElement = ({ elem }: IDocumentElement): ReactElement => {
       <DeleteWrapper>
         <DeleteOutlined />
       </DeleteWrapper>
+      <DownloadWrapper onClick={onClickDownload}>
+        <CloudDownloadOutlined />
+      </DownloadWrapper>
     </DocumentWrapper>
   );
 };
+
+const DownloadWrapper = styled.div`
+  position: absolute;
+  z-index: 1;
+  right: 15px;
+  bottom: -40px;
+`;
 
 const DocumentWrapper = styled.div`
   position: relative;

@@ -58,7 +58,6 @@ export const MainPageInfo = (): ReactElement => {
       temperature: 0.01,
     };
     const data = { type: chooseFileType.value, fields: { ...fields }, params };
-    console.log('data', data);
     void (async (): Promise<void> => {
       await axios
         .post(`${import.meta.env.VITE_API_URL}/generate`, data)
