@@ -1,4 +1,5 @@
 [core]
     remote = storage
 ['remote "storage"']
-    url = s3://hacks/lawyer-assistant
+    url = s3://hacks/lawyer-assistant/
+    endpointurl = https://storage.yandexcloud.net
