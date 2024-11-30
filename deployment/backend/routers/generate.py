@@ -16,8 +16,6 @@ from common.llm.utils import change_current_lora_adapter, get_completion
 from common.db.utils import upload_document
 from common.db.models import *
 
-from common.classification.utils import get_classification_result
-
 
 class InputModel(BaseModel):
     """
