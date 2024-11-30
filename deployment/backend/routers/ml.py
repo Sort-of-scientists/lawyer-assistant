@@ -2,36 +2,49 @@ import os
 import io
 import json
 
+import common.ml.utils as ml_utils
+import common.db.utils as db_utils
+
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import StreamingResponse
 
 from common.ml.schemes import *
-from common.ml.utils import *
 
 from common.parser.utils import parse_document, text_to_docx_bytes
 
 from common.db.schemes import *
-from common.db.utils import *
 
 
 router = APIRouter()
 
 # initialize the document classifier
-docs_classifier = DocsClassifier(model_path="models/docs-classifier", tokenizer_path="models/docs-classifier")
+docs_classifier = ml_utils.DocsClassifier(model_path="models/docs-classifier", tokenizer_path="models/docs-classifier")
 
 
 @router.post("/generate")
 async def generate(input: GenerateInputModel) -> StreamingResponse:
-    change_current_lora_adapter(adapter_id=int(os.environ.get("GENERATE_LORA_ADAPTER_ID")))
+    """
+    A route to generate a document using LLM API.
+
+    Parameters
+    ----------
+    input : GenerateInputModel
+        _description_
+
+    Returns
+    -------
+    StreamingResponse
+    """
+    ml_utils.change_current_lora_adapter(adapter_id=int(os.environ.get("GENERATE_LORA_ADAPTER_ID")))
     
     # generate document based on fields:
-    document_as_text = get_completion(prompt=json.dumps(input.fields, ensure_ascii=False), params=input.params.model_dump())
+    document_as_text = ml_utils.get_completion(prompt=json.dumps(input.fields, ensure_ascii=False), params=input.params.model_dump())
     
     # transform document in text format to byte
     document_as_byte = text_to_docx_bytes(document_as_text)
     
     # upload document to mongodb
-    upload_document(
+    db_utils.upload_document(
         Document(
             file=document_as_byte, 
             info=DocumentInfo(
@@ -70,18 +83,18 @@ async def summarize(file: UploadFile = File(...), n_sentences_to_keep: int = 2, 
     temperature : float
         Temperature of generation.
     """
-    change_current_lora_adapter(adapter_id=int(os.environ.get("SUMMARY_LORA_ADAPTER_ID")))
+    ml_utils.change_current_lora_adapter(adapter_id=int(os.environ.get("SUMMARY_LORA_ADAPTER_ID")))
 
     # parse document
     document = await file.read()
     document = parse_document(document)
 
     # preprocess input text
-    text = get_preprocessed_text(text=document)
+    text = ml_utils.get_preprocessed_text(text=document)
     # make request to llama.cpp server
-    summary = get_completion(prompt=text, params={"n_predict": n_predict, "temperature": temperature})
+    summary = ml_utils.get_completion(prompt=text, params={"n_predict": n_predict, "temperature": temperature})
     # reduce summary
-    summary = get_reduced_summary(summary=summary, n_sentences_to_keep=n_sentences_to_keep)
+    summary = ml_utils.get_reduced_summary(summary=summary, n_sentences_to_keep=n_sentences_to_keep)
 
     return summary
 

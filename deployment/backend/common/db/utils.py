@@ -29,14 +29,17 @@ def upload_document(document: Document):
     document_as_bytes : bytes
     """
 
-    collection.insert_one(document={
-        "file": document.file,
-        "info": document.info.model_dump(),
-        "type": document.type.model_dump(),
-        "entities": [ent.model_dump() for ent in document.entities],
-        "timestamp": datetime.now()
-    })
+    try:
+        collection.insert_one(document={
+            "file": document.file,
+            "info": document.info.model_dump(),
+            "type": document.type.model_dump(),
+            "entities": [ent.model_dump() for ent in document.entities],
+            "timestamp": datetime.now()
+        })
 
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload document: {e}")
 
 def delete_document(document_id: str):
     """
