@@ -28,6 +28,7 @@ export const MainPageInfo = (): ReactElement => {
       navigate(DOCUMENTS);
     }, 3000);
   };
+
   return (
     <Wrapper>
       <MainContainer>
