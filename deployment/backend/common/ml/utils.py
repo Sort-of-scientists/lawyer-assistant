@@ -6,6 +6,8 @@ from fastapi import HTTPException
 
 from dataclasses import dataclass
 
+from transformers import pipeline
+
 
 LLAMACPP_SERVER = "http://llamacpp-server:8080"
 
@@ -180,3 +182,35 @@ def get_reduced_summary(summary: str, n_sentences_to_keep: int) -> str:
     reduced_summary = " ".join(sentences[:n_sentences_to_keep])
 
     return reduced_summary
+
+
+class DocsClassifier:    
+    """    
+    Class for text classification using Transformers model.
+
+    Attributes:
+        classifier: An object for performing classification based on the specified model and tokenizer.    
+    """
+    
+    def __init__(self, model_path: str, tokenizer_path: str):
+        """
+        Initializes an instance of the DocsClassifier class.
+
+        Args:
+            model_path (str): Path to the model for loading.
+            tokenizer_path (str): Path to the tokenizer for loading.
+        """
+        self.classifier = pipeline("text-classification", model=model_path, tokenizer=tokenizer_path)
+
+    def predict(self, text: str) -> List[dict]:
+        """
+        Performs classification on a given text.
+
+        Args:
+            text (str): The input text to classify.
+
+        Returns:
+            List[dict]: A list of predictions, where each prediction is represented as a dictionary
+            with keys "label" and "score".
+        """
+        return self.classifier(text)

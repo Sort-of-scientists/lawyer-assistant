@@ -62,8 +62,15 @@ class ClassifyInputModel(BaseModel):
 
     Attributes
     ----------
+    text : str
+        Text to classify.
+        
+    thereshold : float    
+        Classification reliability threshold.    
     """
-    pass
+    
+    text: str
+    thereshold: float
 
 
 class ClassifyOutputModel(BaseModel):
@@ -72,8 +79,15 @@ class ClassifyOutputModel(BaseModel):
 
     Attributes
     ----------
+    label : str 
+        The predicted label (class).
+        
+    score : float 
+        The confidence score of the prediction (a value between 0 and 1).
     """
-    pass
+    
+    label: str
+    score: float
 
 
 class EntityRecognizeInputModel(BaseModel):

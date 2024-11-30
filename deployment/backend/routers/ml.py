@@ -15,6 +15,9 @@ from common.db.utils import *
 
 router = APIRouter()
 
+# Initialize the document classifier
+docs_classifier = DocsClassifier(model_path="models/docs-classifier", tokenizer_path="models/docs-classifier")
+
 
 @router.post("/generate")
 async def generate(input: GenerateInputModel) -> StreamingResponse:
@@ -74,7 +77,24 @@ def summarize(input: SummarizeInputModel, n_sentences_to_keep: int = 2) -> str:
 
 @router.post("/classify")
 def classify(input: ClassifyInputModel) -> ClassifyOutputModel:
-    pass
+    """
+    Processes a request for document classification.
+
+    Parameters
+    ----------
+    input: ClassifyInputModeltext 
+        Input with **text** and **thereshold**(str).
+        
+    Return
+    ----------
+    ClassifyOutputModel
+        Output with **label** and **score**.
+
+    """
+    pred = docs_classifier.predict(input.text)[0]   
+    if pred['score'] < input.thereshold:
+        pred['label'] = 'Не определен'
+    return ClassifyOutputModel(label=pred["label"], score=pred["score"])
 
 
 @router.post("/entity-recognize")
