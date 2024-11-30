@@ -35,7 +35,6 @@ export const DocEditor = ({ fileUrl }: IDocEditor): ReactElement => {
     fetchDocx();
   }, [fileUrl]);
 
-  // Сохранение изменений в .docx файл
   const saveDoc = () => {
     const newDoc = new Document({
       sections: [
