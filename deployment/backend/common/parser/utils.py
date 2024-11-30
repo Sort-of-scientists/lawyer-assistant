@@ -1,6 +1,11 @@
 import io
 import docx
 
+from typing import Any
+from tika import parser
+
+TIKA_ENDPOINT = "http://tika:9998/tika"
+
 
 def text_to_docx_bytes(text: str) -> bytes:
     """
@@ -27,3 +32,7 @@ def text_to_docx_bytes(text: str) -> bytes:
     
     byte_stream.seek(0)
     return byte_stream.getvalue()
+
+
+def parse_document(document_as_bytes: Any) -> str:
+    parser.from_buffer(document_as_bytes, TIKA_ENDPOINT)
