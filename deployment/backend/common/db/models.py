@@ -26,9 +26,9 @@ class Entity(BaseModel):
 
     value: str
     label: str
-    score: float
-    start: int
-    end: int
+    score: float | None = None
+    start: int | None = None
+    end: int | None = None
 
 
 class DocumentInfo(BaseModel):
@@ -56,7 +56,7 @@ class DocumentType(BaseModel):
     """
 
     label: str
-    score: float
+    score: float | None = None
 
 
 class Document(BaseModel):

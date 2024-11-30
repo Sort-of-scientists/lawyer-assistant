@@ -7,7 +7,7 @@ from typing import List, Dict
 
 from datetime import datetime
 
-from models import Document
+from .models import Document
 
 
 client = MongoClient(os.environ.get("MONGO_URI"))
