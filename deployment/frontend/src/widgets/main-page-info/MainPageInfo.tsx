@@ -2,11 +2,14 @@ import React, { type ReactElement, useState } from 'react';
 import { Button, Input } from 'antd';
 import styled from 'styled-components';
 import { BaseInput } from '@/features/input/BaseInput.tsx';
-import { CreateFileModal } from '@/features/modal/CreateFileModal.tsx';
+import { CreateFileModal, ICreateDocument } from '@/features/modal/CreateFileModal.tsx';
+import { useNavigate } from 'react-router-dom';
+import { DOCUMENTS } from '@/shared/constants/paths.ts';
 
 export const MainPageInfo = (): ReactElement => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const handleCancel = () => {
     setOpen(false);
   };
@@ -16,11 +19,13 @@ export const MainPageInfo = (): ReactElement => {
     setOpen(true);
   };
 
-  const handlerEditOnClick = () => {
+  const handlerEditOnClick = (value: ICreateDocument) => {
+    console.log('value', value);
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       setOpen(false);
+      navigate(DOCUMENTS);
     }, 3000);
   };
   return (

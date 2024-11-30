@@ -1,39 +1,116 @@
 import React, { type ReactElement } from 'react';
-import { Button, Modal } from 'antd';
+import { Button, Form, Modal } from 'antd';
 import { BaseInput } from '@/features/input/BaseInput.tsx';
 import styled from 'styled-components';
 import { CenteredContent } from '@/app/styles/content/ContentStyle.tsx';
+import { Formik } from 'formik';
 import TextArea from 'antd/es/input/TextArea';
 
+export interface ICreateDocument {
+  seller: string;
+  buyer: string;
+  price: string;
+  subject: string;
+}
+
 interface IEditFileModal {
-  handleOk: () => void;
+  handleOk: (value: ICreateDocument) => void;
   handleCancel: () => void;
   open: boolean;
 }
 export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal): ReactElement => {
+  const initialValues: ICreateDocument = {
+    seller: '',
+    buyer: '',
+    price: '',
+    subject: '',
+  };
+
+  const onSubmit = (values, { setSubmitting }) => {
+    console.log(JSON.stringify(values, null, 2));
+    setSubmitting(false);
+    handleOk(values as ICreateDocument);
+  };
+
   return (
-    <Modal
-      open={open}
-      title={<TitleWrapper>Создать документ</TitleWrapper>}
-      onOk={handleOk}
-      onCancel={handleCancel}
-      width={400}
-      style={{ textAlign: 'center' }}
-      footer={[<StyledButton onClick={handleOk}>Подтведить</StyledButton>]}
-    >
-      <Wrapper>
-        <Container>
-          <Text>Продавец</Text>
-          <BaseInput placeholder={'Имя продавца'} />
-          <Text>Покупатель</Text>
-          <BaseInput placeholder={'Имя покупателя'} />
-          <Text>Цена</Text>
-          <BaseInput placeholder={'Стоимость товара'} />
-          <Text> Предмет договора</Text>
-          <TextArea />
-        </Container>
-      </Wrapper>
-    </Modal>
+    <>
+      <Formik initialValues={initialValues} onSubmit={onSubmit}>
+        {({
+          values,
+          errors,
+          setSubmitting,
+          touched,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          isSubmitting,
+        }) => (
+          <Modal
+            open={open}
+            title={<TitleWrapper>Создать документ</TitleWrapper>}
+            onCancel={handleCancel}
+            width={400}
+            style={{ textAlign: 'center' }}
+            footer={[
+              <StyledButton
+                type="submit"
+                onClick={() => {
+                  onSubmit(values, { setSubmitting });
+                }}
+                disabled={isSubmitting}
+              >
+                Подтведить
+              </StyledButton>,
+            ]}
+          >
+            <Wrapper>
+              <Container>
+                <Form onSubmit={handleSubmit}>
+                  <Container>
+                    <Text>Продавец</Text>
+                    <BaseInput
+                      type="seller"
+                      name="seller"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      placeholder={'Имя продавца'}
+                      value={values.seller}
+                    />
+                    <Text>Покупатель</Text>
+                    <BaseInput
+                      type="buyer"
+                      name="buyer"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.buyer}
+                      placeholder={'Имя покупателя'}
+                    />
+                    <Text>Цена</Text>
+                    <BaseInput
+                      type="price"
+                      name="price"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.price}
+                      placeholder={'Стоимость товара'}
+                    />
+                    <Text> Предмет договора</Text>
+                    <TextArea
+                      type="subject"
+                      name="subject"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.subject}
+                      placeholder={'Напишите о своей предметной области'}
+                    />
+                  </Container>
+                </Form>
+              </Container>
+            </Wrapper>
+          </Modal>
+        )}
+      </Formik>
+    </>
   );
 };
 
