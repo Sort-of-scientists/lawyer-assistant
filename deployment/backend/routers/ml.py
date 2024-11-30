@@ -19,31 +19,6 @@ router = APIRouter()
 docs_classifier = DocsClassifier(model_path="models/docs-classifier", tokenizer_path="models/docs-classifier")
 
 
-@router.post("/summarize")
-def summarize(input: SummarizeInputModel, n_sentences_to_keep: int = 2) -> str:
-    """
-    A route to make a summary of the input text.
-
-    Parameters
-    ----------
-    input : InputModel
-        Input with **text** and sampling **params**,
-    n_sentences_to_keep : int, optional
-        Number of sentences to keep in result summary.
-    """
-
-    change_current_lora_adapter(adapter_id=int(os.environ.get("SUMMARY_LORA_ADAPTER_ID")))
-
-    # preprocess input text
-    text = get_preprocessed_text(text=input.text)
-    # make request to llama.cpp server
-    summary = get_completion(prompt=text, params=input.params.model_dump())
-    # reduce summary
-    summary = get_reduced_summary(summary=summary, n_sentences_to_keep=n_sentences_to_keep)
-
-    return summary
-
-
 @router.post("/generate")
 async def generate(input: GenerateInputModel) -> StreamingResponse:
     change_current_lora_adapter(adapter_id=int(os.environ.get("GENERATE_LORA_ADAPTER_ID")))
@@ -73,6 +48,31 @@ async def generate(input: GenerateInputModel) -> StreamingResponse:
     file_like_document.seek(0)
 
     return StreamingResponse(file_like_document, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", headers={"Content-Disposition": "attachment; filename=document.docx"})
+
+
+@router.post("/summarize")
+def summarize(input: SummarizeInputModel, n_sentences_to_keep: int = 2) -> str:
+    """
+    A route to make a summary of the input text.
+
+    Parameters
+    ----------
+    input : InputModel
+        Input with **text** and sampling **params**,
+    n_sentences_to_keep : int, optional
+        Number of sentences to keep in result summary.
+    """
+
+    change_current_lora_adapter(adapter_id=int(os.environ.get("SUMMARY_LORA_ADAPTER_ID")))
+
+    # preprocess input text
+    text = get_preprocessed_text(text=input.text)
+    # make request to llama.cpp server
+    summary = get_completion(prompt=text, params=input.params.model_dump())
+    # reduce summary
+    summary = get_reduced_summary(summary=summary, n_sentences_to_keep=n_sentences_to_keep)
+
+    return summary
 
 
 @router.post("/classify")
