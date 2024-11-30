@@ -11,7 +11,6 @@ app.include_router(generate.router)
 app.include_router(database.router)
 app.include_router(forms.router)
 
-
 @app.get("/")
 def root():
     return {}
