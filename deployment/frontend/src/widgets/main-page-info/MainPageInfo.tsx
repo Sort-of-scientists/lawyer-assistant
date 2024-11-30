@@ -1,15 +1,41 @@
-import React, { type ReactElement, useState } from 'react';
-import { Button, Input } from 'antd';
+import React, { type ReactElement, useEffect, useState } from 'react';
+import { Button, Input, message, SelectProps } from 'antd';
 import styled from 'styled-components';
 import { BaseInput } from '@/features/input/BaseInput.tsx';
 import { CreateFileModal, ICreateDocument } from '@/features/modal/CreateFileModal.tsx';
 import { useNavigate } from 'react-router-dom';
 import { DOCUMENTS } from '@/shared/constants/paths.ts';
+import { BaseSelect } from '@/features/select/BaseSelect.tsx';
+import axios from 'axios';
 
 export const MainPageInfo = (): ReactElement => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [fileType, setFileType] = useState<SelectProps['options']>([]);
+  const [chooseFileType, setChooseFileType] = useState<SelectProps['options']>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchData = async () => {
+      try {
+        const response = (await axios.get(`${import.meta.env.VITE_API_URL}/types`)).data;
+        if (isMounted) {
+          const options = response.map((elem, i) => ({ value: elem }));
+          setFileType(options);
+          setChooseFileType(options[0]);
+        }
+      } catch (e) {
+        messageApi.error(`Ошибка загрузки: ${e}`);
+      }
+    };
+    void fetchData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
   const handleCancel = () => {
     setOpen(false);
   };
@@ -30,19 +56,27 @@ export const MainPageInfo = (): ReactElement => {
   };
 
   return (
-    <Wrapper>
-      <MainContainer>
-        <CreateFileModal handleCancel={handleCancel} open={open} handleOk={handlerEditOnClick} />
-        <TextContainer>
-          <TitleText>Помощник юриста</TitleText>
-          <Description>Создайте новый документ по шаблону</Description>
-        </TextContainer>
-        <SearchContainer>
-          <StyledInput placeholder={'Купли-продажи'} />
-          <StyledButton onClick={showModal}>Вперед!</StyledButton>
-        </SearchContainer>
-      </MainContainer>
-    </Wrapper>
+    <>
+      {contextHolder}
+      <Wrapper>
+        <MainContainer>
+          <CreateFileModal handleCancel={handleCancel} open={open} handleOk={handlerEditOnClick} />
+          <TextContainer>
+            <TitleText>Помощник юриста</TitleText>
+            <Description>Создайте новый документ по шаблону</Description>
+          </TextContainer>
+          <SearchContainer>
+            <StyledSelect
+              options={fileType}
+              onSelect={v => setChooseFileType(v)}
+              value={chooseFileType}
+              placeholder={'Купли-продажи'}
+            />
+            <StyledButton onClick={showModal}>Вперед!</StyledButton>
+          </SearchContainer>
+        </MainContainer>
+      </Wrapper>
+    </>
   );
 };
 
@@ -101,7 +135,7 @@ const SearchContainer = styled.div`
   gap: 12px;
 `;
 
-const StyledInput = styled(BaseInput)`
+const StyledSelect = styled(BaseSelect)`
   height: 40px;
   width: 70%;
   border-radius: 8px;
