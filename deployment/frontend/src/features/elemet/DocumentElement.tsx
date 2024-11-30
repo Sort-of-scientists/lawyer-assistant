@@ -11,8 +11,9 @@ import { downloadFile } from '@/shared/utils/utils.ts';
 
 interface IDocumentElement {
   elem: IDocumentObject;
+  fetchData: (isMounted?: boolean) => Promise<void>;
 }
-export const DocumentElement = ({ elem }: IDocumentElement): ReactElement => {
+export const DocumentElement = ({ elem, fetchData }: IDocumentElement): ReactElement => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
@@ -31,6 +32,13 @@ export const DocumentElement = ({ elem }: IDocumentElement): ReactElement => {
         })
       ).data;
       downloadFile(response, `${elem.info?.header?.replace('.txt', '')}.docx`);
+    })();
+  };
+
+  const handleDelete = (): void => {
+    void (async (): Promise<void> => {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/document?document_id=${elem.id}`);
+      await fetchData(true);
     })();
   };
   const handleCancel = (): void => {
@@ -69,7 +77,7 @@ export const DocumentElement = ({ elem }: IDocumentElement): ReactElement => {
           </SummaryButton>
         </ButtonWrapper>
       </InfoWrapper>
-      <DeleteWrapper>
+      <DeleteWrapper onClick={handleDelete}>
         <DeleteOutlined />
       </DeleteWrapper>
       <DownloadWrapper onClick={onClickDownload}>
