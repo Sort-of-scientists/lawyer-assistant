@@ -3,8 +3,8 @@ import {
   commonThemeVariables,
   darkThemeVariables,
   lightThemeVariables,
-} from 'deployment/frontend/src/app/styles/theme/theme-variables.ts';
-import { BREAKPOINTS, FONT_SIZE, FONT_WEIGHT, media } from 'deployment/frontend/src/shared/constants/styles.ts';
+} from '@/app/styles/theme/theme-variables.ts';
+import { BREAKPOINTS, FONT_SIZE, FONT_WEIGHT, media } from '@/shared/constants/styles.ts';
 
 export default createGlobalStyle`
     

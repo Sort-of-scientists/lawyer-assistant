@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { CenteredContent } from 'deployment/frontend/src/app/styles/content/ContentStyle.tsx';
+import { CenteredContent } from '@/app/styles/content/ContentStyle.tsx';
 
 export const Wrapper = styled(CenteredContent)`
   width: 100%;

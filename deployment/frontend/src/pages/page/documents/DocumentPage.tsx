@@ -1,8 +1,8 @@
 import React, { type ReactElement } from 'react';
-import { PageTitle } from 'deployment/frontend/src/features/page-title/PageTitle.tsx';
-import { DocumentsMenu } from 'deployment/frontend/src/widgets/document-page/DocumentsMenu.tsx';
+import { PageTitle } from '@/features/page-title/PageTitle.tsx';
+import { DocumentsMenu } from '@/widgets/document-page/DocumentsMenu.tsx';
 import styled from 'styled-components';
-import { BaseRoundSelect } from 'deployment/frontend/src/features/select/BaseRoundSelect.tsx';
+import { BaseRoundSelect } from '@/features/select/BaseRoundSelect.tsx';
 import { SearchOutlined } from '@ant-design/icons';
 
 export const DocumentPage = (): ReactElement => {

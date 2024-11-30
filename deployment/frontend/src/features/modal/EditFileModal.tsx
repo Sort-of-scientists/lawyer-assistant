@@ -1,9 +1,9 @@
-import React, { type ReactElement } from 'react';
+import React, { type ReactElement, useState } from 'react';
 import { Button, Modal } from 'antd';
 import styled from 'styled-components';
-import { BaseInput } from 'deployment/frontend/src/features/input/BaseInput.tsx';
-import { CenteredContent } from 'deployment/frontend/src/app/styles/content/ContentStyle.tsx';
-import { BaseSelect } from 'deployment/frontend/src/features/select/BaseSelect.tsx';
+import { BaseInput } from '@/features/input/BaseInput.tsx';
+import { CenteredContent } from '@/app/styles/content/ContentStyle.tsx';
+import { BaseSelect } from '@/features/select/BaseSelect.tsx';
 
 interface IEditFileModal {
   handleOk: () => void;

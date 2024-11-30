@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { WithChildrenProps } from 'deployment/frontend/src/shared/types/general.types.ts';
+import { WithChildrenProps } from '@/shared/types/general.types.ts';
 
 export const PageTitle: React.FC<WithChildrenProps> = ({ children }) => {
   return (

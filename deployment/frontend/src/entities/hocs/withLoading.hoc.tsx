@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Loading } from 'deployment/frontend/src/features/loading/Loading.tsx';
+import { Loading } from '@/features/loading/Loading.tsx';
 
 type ReturnType<T> = (props: T) => JSX.Element;
 

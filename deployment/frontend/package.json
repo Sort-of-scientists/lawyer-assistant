@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint  ",
+    "lint": "eslint . ",
     "preview": "vite preview",
-    "lint:fix": "npx eslint  --fix",
-    "format": "prettier --write "
+    "lint:fix": "npx eslint . --fix",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",

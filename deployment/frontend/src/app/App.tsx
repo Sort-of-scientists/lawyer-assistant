@@ -1,11 +1,11 @@
-import 'deployment/frontend/src/app/App.css';
-import { withProviders } from 'deployment/frontend/src/app/providers/with-providers.ts';
-import { MainRouter } from 'deployment/frontend/src/pages/MainRouter.tsx';
+import '@/app/App.css';
+import { withProviders } from '@/app/providers/with-providers.ts';
+import { MainRouter } from '@/pages/MainRouter.tsx';
 import { ConfigProvider, theme } from 'antd';
-import { useThemeWatcher } from 'deployment/frontend/src/entities/hocs/useThemeWatcher.tsx';
-import { useAppSelector } from 'deployment/frontend/src/store/hooks/redux.hook.ts';
-import { themeObject } from 'deployment/frontend/src/app/styles/theme/theme-variables.ts';
-import GlobalStyle from 'deployment/frontend/src/app/styles/global-styles.ts';
+import { useThemeWatcher } from '@/entities/hocs/useThemeWatcher.tsx';
+import { useAppSelector } from '@/store/hooks/redux.hook.ts';
+import { themeObject } from '@/app/styles/theme/theme-variables.ts';
+import GlobalStyle from '@/app/styles/global-styles.ts';
 function App() {
   const reduxTheme = useAppSelector(state => state.theme.theme);
   useThemeWatcher();

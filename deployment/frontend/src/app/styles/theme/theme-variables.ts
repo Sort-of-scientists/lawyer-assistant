@@ -1,9 +1,9 @@
-import { lightColorsTheme } from 'deployment/frontend/src/app/styles/theme/light-theme.ts';
-import { antDarkColorsTheme, darkColorsTheme } from 'deployment/frontend/src/app/styles/theme/dark-theme.ts';
+import { lightColorsTheme } from '@/app/styles/theme/light-theme.ts';
+import { antDarkColorsTheme, darkColorsTheme } from '@/app/styles/theme/dark-theme.ts';
 import { css } from 'styled-components';
-import { hexToRGB } from 'deployment/frontend/src/shared/utils/utils.ts';
-import { BASE_COLORS } from 'deployment/frontend/src/shared/constants/styles.ts';
-import { ThemeType } from 'deployment/frontend/src/shared/types/general.types.ts';
+import { hexToRGB } from '@/shared/utils/utils.ts';
+import { BASE_COLORS } from '@/shared/constants/styles.ts';
+import { ThemeType } from '@/shared/types/general.types.ts';
 
 export const themeObject = {
   light: lightColorsTheme,

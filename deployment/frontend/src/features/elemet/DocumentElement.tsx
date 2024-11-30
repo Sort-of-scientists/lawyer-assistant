@@ -1,10 +1,10 @@
 import React, { type ReactElement, useState } from 'react';
 import styled from 'styled-components';
-import { DocumentSvg } from 'deployment/frontend/src/shared/svg/document.svg.tsx';
+import { DocumentSvg } from '@/shared/svg/document.svg.tsx';
 import { Button, theme } from 'antd';
-import { IDocumentData } from 'deployment/frontend/src/shared/data/document.data.ts';
+import { IDocumentData } from '@/shared/data/document.data.ts';
 import { DeleteOutlined } from '@ant-design/icons';
-import { EditFileModal } from 'deployment/frontend/src/features/modal/EditFileModal.tsx';
+import { EditFileModal } from '@/features/modal/EditFileModal.tsx';
 
 interface IDocumentElement {
   elem: IDocumentData;

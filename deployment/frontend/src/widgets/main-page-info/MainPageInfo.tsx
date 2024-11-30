@@ -1,18 +1,39 @@
-import React, { type ReactElement } from 'react';
+import React, { type ReactElement, useState } from 'react';
 import { Button, Input } from 'antd';
 import styled from 'styled-components';
-import { BaseInput } from 'deployment/frontend/src/features/input/BaseInput.tsx';
+import { BaseInput } from '@/features/input/BaseInput.tsx';
+import { CreateFileModal } from '@/features/modal/CreateFileModal.tsx';
 
 export const MainPageInfo = (): ReactElement => {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
+  const showModal = () => {
+    if (loading) return;
+    setOpen(true);
+  };
+
+  const handlerEditOnClick = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setOpen(false);
+    }, 3000);
+  };
   return (
     <Wrapper>
       <MainContainer>
+        <CreateFileModal handleCancel={handleCancel} open={open} handleOk={handlerEditOnClick} />
         <TextContainer>
           <TitleText>Помощник юриста</TitleText>
           <Description>Создайте новый документ по шаблону</Description>
         </TextContainer>
         <SearchContainer>
-          <StyledInput placeholder={'Купли-продажи'} /> <StyledButton>Вперед!</StyledButton>
+          <StyledInput placeholder={'Купли-продажи'} />
+          <StyledButton onClick={showModal}>Вперед!</StyledButton>
         </SearchContainer>
       </MainContainer>
     </Wrapper>

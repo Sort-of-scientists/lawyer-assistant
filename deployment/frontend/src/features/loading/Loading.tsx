@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { darkColorsTheme } from 'deployment/frontend/src/app/styles/theme/dark-theme.ts';
-import { GlobalSpinner } from 'deployment/frontend/src/features/loading/global-spinner/GlobalSpinner.tsx';
+import { darkColorsTheme } from '@/app/styles/theme/dark-theme.ts';
+import { GlobalSpinner } from '@/features/loading/global-spinner/GlobalSpinner.tsx';
 
 interface LoadingProps {
   size?: string;

@@ -2,8 +2,8 @@ import React, { type ReactElement } from 'react';
 import { Layout } from 'antd';
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
-import { MainHeader } from 'deployment/frontend/src/widgets/main-layout/header/MainHeader.tsx';
-import { MainFooter } from 'deployment/frontend/src/widgets/main-layout/footer/MainFooter.tsx';
+import { MainHeader } from '@/widgets/main-layout/header/MainHeader.tsx';
+import { MainFooter } from '@/widgets/main-layout/footer/MainFooter.tsx';
 const { Header, Footer, Content } = Layout;
 
 const footerStyle: React.CSSProperties = {

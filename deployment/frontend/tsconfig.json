@@ -8,6 +8,5 @@
       "path": "./tsconfig.node.json"
     }
   ],
-  "include": [
-    "src", "src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx"]
+  "include": ["src", "src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx"]
 }

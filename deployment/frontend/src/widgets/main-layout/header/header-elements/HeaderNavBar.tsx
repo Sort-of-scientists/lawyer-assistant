@@ -1,6 +1,6 @@
 import React, { type ReactElement, useState } from 'react';
-import { HeaderNav } from 'deployment/frontend/src/features/navigations/HeaderNav.tsx';
-import { headerNavBarData, IHeaderNavbarData } from 'deployment/frontend/src/shared/data/header-navbar.data.ts';
+import { HeaderNav } from '@/features/navigations/HeaderNav.tsx';
+import { headerNavBarData, IHeaderNavbarData } from '@/shared/data/header-navbar.data.ts';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
 

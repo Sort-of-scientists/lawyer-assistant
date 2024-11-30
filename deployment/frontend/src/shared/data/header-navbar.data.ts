@@ -1,4 +1,4 @@
-import { DOCUMENTS, EDITOR, MAIN } from 'deployment/frontend/src/shared/constants/paths.ts';
+import { DOCUMENTS, EDITOR, MAIN } from '@/shared/constants/paths.ts';
 
 export interface IHeaderNavbarData {
   id: number;

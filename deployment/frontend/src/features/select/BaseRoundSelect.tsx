@@ -1,7 +1,7 @@
 import React, { type ReactElement } from 'react';
 import styled from 'styled-components';
 import { Select, SelectProps } from 'antd';
-import { ISelectProps } from 'deployment/frontend/src/features/select/BaseSelect.tsx';
+import { ISelectProps } from '@/features/select/BaseSelect.tsx';
 
 export interface ISelectProps extends SelectProps {
   className?: string;

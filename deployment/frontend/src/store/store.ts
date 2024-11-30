@@ -1,6 +1,6 @@
-import { errorLoggingMiddleware } from 'deployment/frontend/src/store/middlewares/errorLogging.middleware';
+import { errorLoggingMiddleware } from './middlewares/errorLogging.middleware';
 import { configureStore } from '@reduxjs/toolkit';
-import rootReducer from 'deployment/frontend/src/store/reducers';
+import rootReducer from './reducers/index';
 
 export const store = configureStore({
   reducer: rootReducer,

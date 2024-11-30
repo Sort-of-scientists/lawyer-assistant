@@ -1,8 +1,8 @@
 import React, { type ReactElement } from 'react';
 import styled from 'styled-components';
 import { Layout } from 'antd';
-import { HeaderNavBar } from 'deployment/frontend/src/widgets/main-layout/header/header-elements/HeaderNavBar.tsx';
-import { LogoSvg } from 'deployment/frontend/src/shared/svg/logo.svg.tsx';
+import { HeaderNavBar } from '@/widgets/main-layout/header/header-elements/HeaderNavBar.tsx';
+import { LogoSvg } from '@/shared/svg/logo.svg.tsx';
 
 const { Header } = Layout;
 export const MainHeader = (): ReactElement => {

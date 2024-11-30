@@ -1,6 +1,6 @@
 import { graphic } from 'echarts';
-import { shadeColor } from 'deployment/frontend/src/shared/utils/utils.ts';
-import { BASE_COLORS } from 'deployment/frontend/src/shared/constants/styles.ts';
+import { shadeColor } from '@/shared/utils/utils.ts';
+import { BASE_COLORS } from '@/shared/constants/styles.ts';
 
 const chartColors = {
   chartTooltipLabel: '#6A7985',

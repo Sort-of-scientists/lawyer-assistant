@@ -1,4 +1,4 @@
-import themeReducer from 'deployment/frontend/src/store/reducers/slices/theme.slice';
+import themeReducer from './slices/theme.slice';
 export default {
   theme: themeReducer,
 };

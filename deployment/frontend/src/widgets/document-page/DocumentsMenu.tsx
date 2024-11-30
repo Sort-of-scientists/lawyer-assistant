@@ -1,7 +1,7 @@
 import React, { type ReactElement } from 'react';
-import { DocumentElement } from 'deployment/frontend/src/features/elemet/DocumentElement.tsx';
+import { DocumentElement } from '@/features/elemet/DocumentElement.tsx';
 import styled from 'styled-components';
-import { documentData } from 'deployment/frontend/src/shared/data/document.data.ts';
+import { documentData } from '@/shared/data/document.data.ts';
 
 export const DocumentsMenu = (): ReactElement => {
   return (

@@ -1,5 +1,5 @@
 import { createSlice, createAction, type PrepareAction } from '@reduxjs/toolkit';
-import { ThemeType } from 'deployment/frontend/src/shared/types/general.types.ts';
+import { ThemeType } from '@/shared/types/general.types.ts';
 
 interface ThemeState {
   theme: ThemeType;

@@ -1,10 +1,10 @@
 import React, { type ReactElement } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { DOCUMENTS, EDITOR, MAIN, ROOT } from 'deployment/frontend/src/shared/constants/paths.ts';
-import { MainLayout } from 'deployment/frontend/src/widgets/main-layout/MainLayout.tsx';
-import { MainPage } from 'deployment/frontend/src/pages/page/main/MainPage.tsx';
-import { DocumentPage } from 'deployment/frontend/src/pages/page/documents/DocumentPage.tsx';
-import { EditorPage } from 'deployment/frontend/src/pages/page/editor/EditorPage.tsx';
+import { DOCUMENTS, EDITOR, MAIN, ROOT } from '@/shared/constants/paths.ts';
+import { MainLayout } from '@/widgets/main-layout/MainLayout.tsx';
+import { MainPage } from '@/pages/page/main/MainPage.tsx';
+import { DocumentPage } from '@/pages/page/documents/DocumentPage.tsx';
+import { EditorPage } from '@/pages/page/editor/EditorPage.tsx';
 
 export const MainRouter = (): ReactElement => {
   return (

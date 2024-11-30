@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { GothamNormal } from 'deployment/frontend/src/app/styles/fonts/FontsStyles.tsx';
+import { GothamNormal } from '@/app/styles/fonts/FontsStyles.tsx';
 
 export const CenteredContent = css`
   display: flex;

@@ -1,7 +1,7 @@
 import React, { type ReactElement } from 'react';
 import { Layout } from 'antd';
 import styled from 'styled-components';
-import { LogoSvg } from 'deployment/frontend/src/shared/svg/logo.svg.tsx';
+import { LogoSvg } from '@/shared/svg/logo.svg.tsx';
 const { Footer } = Layout;
 export const MainFooter = (): ReactElement => {
   return (

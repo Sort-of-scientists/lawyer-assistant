@@ -1,7 +1,7 @@
 import { ConfigProvider } from 'antd';
 import { useEffect, useRef } from 'react';
-import { useAppSelector } from 'deployment/frontend/src/store/hooks/redux.hook.ts';
-import { themeObject } from 'deployment/frontend/src/app/styles/theme/theme-variables.ts';
+import { useAppSelector } from '@/store/hooks/redux.hook.ts';
+import { themeObject } from '@/app/styles/theme/theme-variables.ts';
 
 export const useThemeWatcher = (): void => {
   const theme = useAppSelector(state => state.theme.theme);
