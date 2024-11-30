@@ -12,13 +12,13 @@ from common.parser.utils import parse_document, text_to_docx_bytes
 
 from common.db.schemes import *
 from common.db.utils import *
-
+from common.ml.ner import DocEntityRecognizer
 
 router = APIRouter()
 
 # initialize the document classifier
 docs_classifier = DocsClassifier(model_path="models/docs-classifier", tokenizer_path="models/docs-classifier")
-
+docs_ner = DocEntityRecognizer()
 
 @router.post("/generate")
 async def generate(input: GenerateInputModel) -> StreamingResponse:
@@ -104,5 +104,9 @@ async def classify(file: UploadFile = File(...), threshold: float = 0.4) -> Clas
 
 
 @router.post("/entity-recognize")
-def entity_recognize(input: EntityRecognizeInputModel) -> EntityRecognizeOutputModel:
-    pass
+async def entity_recognize(file: UploadFile = File(...)) -> EntityRecognizeOutputModel:
+    document = await file.read()
+    document: str = parse_document(document)
+
+    recognizer_result = docs_ner.predict(document)
+    return EntityRecognizeOutputModel(recognizer_result=recognizer_result)
