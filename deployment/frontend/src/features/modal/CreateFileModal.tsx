@@ -2,8 +2,7 @@ import React, { type ReactElement } from 'react';
 import { Button, Form, Modal } from 'antd';
 import { BaseInput } from '@/features/input/BaseInput.tsx';
 import styled from 'styled-components';
-import { CenteredContent } from '@/app/styles/content/ContentStyle.tsx';
-import { Formik } from 'formik';
+import { Formik, FieldArray } from 'formik';
 import TextArea from 'antd/es/input/TextArea';
 
 export interface ICreateDocument {
@@ -11,6 +10,7 @@ export interface ICreateDocument {
   buyer: string;
   price: string;
   subject: string;
+  customFields: Array<{ name: string; value: string }>;
 }
 
 interface IEditFileModal {
@@ -18,12 +18,23 @@ interface IEditFileModal {
   handleCancel: () => void;
   open: boolean;
 }
+
 export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal): ReactElement => {
   const initialValues: ICreateDocument = {
     seller: '',
     buyer: '',
     price: '',
     subject: '',
+    customFields: [],
+  };
+
+  const validate = (values: ICreateDocument) => {
+    const errors: Partial<ICreateDocument> = {};
+    if (!values.seller) errors.seller = 'Продавец обязателен';
+    if (!values.buyer) errors.buyer = 'Покупатель обязателен';
+    if (!values.price) errors.price = 'Цена обязательна';
+    if (!values.subject) errors.subject = 'Предмет договора обязателен';
+    return errors;
   };
 
   const onSubmit = (values, { setSubmitting }) => {
@@ -34,7 +45,7 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
 
   return (
     <>
-      <Formik initialValues={initialValues} onSubmit={onSubmit}>
+      <Formik initialValues={initialValues} validate={validate} onSubmit={onSubmit}>
         {({
           values,
           errors,
@@ -55,7 +66,7 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
               <StyledButton
                 type="submit"
                 onClick={() => {
-                  onSubmit(values, { setSubmitting });
+                  handleSubmit();
                 }}
                 disabled={isSubmitting}
               >
@@ -65,43 +76,70 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
           >
             <Wrapper>
               <Container>
-                <Form onSubmit={handleSubmit}>
+                <Form>
                   <Text>Продавец</Text>
                   <BaseInput
-                    type="seller"
                     name="seller"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    placeholder={'Имя продавца'}
                     value={values.seller}
+                    placeholder="Имя продавца"
                   />
                   <Text>Покупатель</Text>
                   <BaseInput
-                    type="buyer"
                     name="buyer"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.buyer}
-                    placeholder={'Имя покупателя'}
+                    placeholder="Имя покупателя"
                   />
                   <Text>Цена</Text>
                   <BaseInput
-                    type="price"
                     name="price"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.price}
-                    placeholder={'Стоимость товара'}
+                    placeholder="Стоимость товара"
                   />
-                  <Text> Предмет договора</Text>
+                  <Text>Предмет договора</Text>
                   <TextArea
-                    type="subject"
                     name="subject"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.subject}
-                    placeholder={'Напишите о своей предметной области'}
+                    placeholder="Напишите о своей предметной области"
                   />
+                  <Text>Кастомные поля</Text>
+                  <FieldArray name="customFields">
+                    {({ push, remove }) => (
+                      <>
+                        {values.customFields.map((field, index) => (
+                          <CustomField key={index}>
+                            <BaseInput
+                              name={`customFields[${index}].name`}
+                              placeholder="Название"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              value={field.name}
+                            />
+                            <BaseInput
+                              name={`customFields[${index}].value`}
+                              placeholder="Значение"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              value={field.value}
+                            />
+                            <RemoveButton onClick={() => remove(index)} type="button">
+                              Удалить
+                            </RemoveButton>
+                          </CustomField>
+                        ))}
+                        <AddButton onClick={() => push({ name: '', value: '' })}>
+                          Добавить поле
+                        </AddButton>
+                      </>
+                    )}
+                  </FieldArray>
                 </Form>
               </Container>
             </Wrapper>
@@ -130,14 +168,31 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  ${CenteredContent};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const CustomField = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+`;
+
+const AddButton = styled(Button)`
+  width: 100%;
+  margin-top: 10px;
+`;
+
+const RemoveButton = styled(Button)`
+  background-color: var(--error-color);
+  color: white;
 `;
 
 const StyledButton = styled(Button)`
   width: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   margin: 0 auto;
   background-color: var(--secondary-background-color);
   color: var(--primary-color);

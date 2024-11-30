@@ -47,12 +47,12 @@ export const MainPageInfo = (): ReactElement => {
 
   const handlerEditOnClick = (value: ICreateDocument): void => {
     setLoading(true);
-    const fields = {};
-    let i = 0;
-    for (const objElement of Object.values(value)) {
-      i += 1;
-      fields[`additionalProp${i}`] = objElement;
+    const { customFields, ...rest } = value;
+    const fields = { ...rest };
+    for (const field of customFields) {
+      fields[field.name] = field.value;
     }
+
     const params = {
       n_predict: 100,
       temperature: 0.01,
