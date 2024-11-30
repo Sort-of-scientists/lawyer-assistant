@@ -25,8 +25,8 @@ services:
       - SUMMARY_LORA_ADAPTER_ID=0
       - GENERATE_LORA_ADAPTER_ID=1
     depends_on:
-      - mongodb
       - tika
+      - mongodb
 
   mongodb:
     image: mongo

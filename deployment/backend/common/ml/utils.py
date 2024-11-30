@@ -1,9 +1,12 @@
+import re
 import requests
 
 from typing import Dict, Any, List
 from fastapi import HTTPException
 
 from dataclasses import dataclass
+
+from transformers import pipeline
 
 
 LLAMACPP_SERVER = "http://llamacpp-server:8080"
@@ -131,3 +134,83 @@ def change_current_lora_adapter(adapter_id: int) -> Dict[str, str | float]:
     
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Failed to connect to the server: {e}")
+   
+
+def get_preprocessed_text(text: str) -> str:
+    """
+    Preprocess text to remove unnecessary spaces, **\\n**, **\\r**, **\\t** symbols.
+
+    Parameters
+    ----------
+    text : str
+
+    Returns
+    -------
+    str
+    """
+
+    text = text.replace("\n", " ").replace("\t", " ").replace("\r", " ")
+    text = re.sub(' +', ' ', text)
+
+    return text
+
+    
+def get_reduced_summary(summary: str, n_sentences_to_keep: int) -> str:
+    """
+    Returns reduced summary. If summary has more than **n_sentences_to_keep** sentences, this func will remain only first **n_sentences_to_keep**.
+
+    Parameters
+    ----------
+    summary : str
+        
+    n_sentences_to_keep : int
+
+    Returns
+    -------
+    str
+        Reduced summary.
+    """
+
+    if n_sentences_to_keep <= 0:
+        raise ValueError("n_sentences_to_keep must be a positive integer.")
+    
+    sentences = re.split(r'(?<=[.!?])\s+', summary.strip())
+
+    if len(sentences) <= n_sentences_to_keep:
+        return summary
+    
+    reduced_summary = " ".join(sentences[:n_sentences_to_keep])
+
+    return reduced_summary
+
+
+class DocsClassifier:    
+    """    
+    Class for text classification using Transformers model.
+
+    Attributes:
+        classifier: An object for performing classification based on the specified model and tokenizer.    
+    """
+    
+    def __init__(self, model_path: str, tokenizer_path: str):
+        """
+        Initializes an instance of the DocsClassifier class.
+
+        Args:
+            model_path (str): Path to the model for loading.
+            tokenizer_path (str): Path to the tokenizer for loading.
+        """
+        self.classifier = pipeline("text-classification", model=model_path, tokenizer=tokenizer_path, max_length=2048)
+
+    def predict(self, text: str) -> List[dict]:
+        """
+        Performs classification on a given text.
+
+        Args:
+            text (str): The input text to classify.
+
+        Returns:
+            List[dict]: A list of predictions, where each prediction is represented as a dictionary
+            with keys "label" and "score".
+        """
+        return self.classifier(text)

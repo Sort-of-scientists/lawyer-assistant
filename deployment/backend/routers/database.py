@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from common.db.utils import *
-from common.db.models import Document
+from common.db.schemes import Document
 
 from fastapi.responses import StreamingResponse
 
