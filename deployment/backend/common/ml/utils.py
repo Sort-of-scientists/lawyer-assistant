@@ -1,3 +1,4 @@
+import re
 import requests
 
 from typing import Dict, Any, List
@@ -131,3 +132,51 @@ def change_current_lora_adapter(adapter_id: int) -> Dict[str, str | float]:
     
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Failed to connect to the server: {e}")
+   
+
+def get_preprocessed_text(text: str) -> str:
+    """
+    Preprocess text to remove unnecessary spaces, **\\n**, **\\r**, **\\t** symbols.
+
+    Parameters
+    ----------
+    text : str
+
+    Returns
+    -------
+    str
+    """
+
+    text = text.replace("\n", " ").replace("\t", " ").replace("\r", " ")
+    text = re.sub(' +', ' ', text)
+
+    return text
+
+    
+def get_reduced_summary(summary: str, n_sentences_to_keep: int) -> str:
+    """
+    Returns reduced summary. If summary has more than **n_sentences_to_keep** sentences, this func will remain only first **n_sentences_to_keep**.
+
+    Parameters
+    ----------
+    summary : str
+        
+    n_sentences_to_keep : int
+
+    Returns
+    -------
+    str
+        Reduced summary.
+    """
+
+    if n_sentences_to_keep <= 0:
+        raise ValueError("n_sentences_to_keep must be a positive integer.")
+    
+    sentences = re.split(r'(?<=[.!?])\s+', summary.strip())
+
+    if len(sentences) <= n_sentences_to_keep:
+        return summary
+    
+    reduced_summary = " ".join(sentences[:n_sentences_to_keep])
+
+    return reduced_summary
