@@ -1,0 +1,1 @@
+LLAMACPP_SERVER_ENDPOINT = "http://llamacpp-server:8080/completion"

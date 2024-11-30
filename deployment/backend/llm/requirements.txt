@@ -1,5 +1,5 @@
 fastapi
 uvicorn
 requests
-python-docx 
-mistune
+python-docx
+pymongo

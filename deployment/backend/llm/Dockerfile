@@ -1,12 +1,12 @@
 FROM python:3.10-slim
 
-WORKDIR /summarizer
+WORKDIR /llm
 
-COPY requirements.txt /summarizer
+COPY requirements.txt /llm
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /summarizer
+COPY . /llm
 
 EXPOSE 8000
 
