@@ -1,5 +1,5 @@
 import re
-import requests
+import os
 
 from fastapi import HTTPException, APIRouter
 from typing import List, Dict, Any
@@ -7,7 +7,7 @@ from typing import List, Dict, Any
 from pydantic import BaseModel
 
 from common.llm.models import SamplingParams
-from common.llm.utils import get_completion
+from common.llm.utils import get_completion, change_current_lora_adapter
 
 
 class InputModel(BaseModel):
@@ -102,6 +102,7 @@ def summarize(input: InputModel, n_sentences_to_keep: int = 2) -> OutputModel:
     n_sentences_to_keep : int, optional
         Number of sentences to keep in result summary.
     """
+    change_current_lora_adapter(adapter_id=int(os.environ.get("SUMMARY_LORA_ADAPTER_ID")))
 
     # preprocess input text
     text = get_preprocessed_text(text=input.text)

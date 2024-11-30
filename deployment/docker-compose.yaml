@@ -5,7 +5,7 @@ services:
       - 8080:8080
     volumes:
       - ./models:/models
-    command: --lora /models/Vikhr-Llama-3.2-1B-Instruct-Summary-Adapter-q8_0.gguf --lora /models/Vikhr-Llama-3.2-1B-Instruct-Summary-Adapter-q8_0.gguf
+    command: --lora /models/Vikhr-Llama-3.2-1B-Instruct-Summary-Adapter-q8_0.gguf --lora /models/Vikhr-Llama-3.2-1B-Instruct-Generate-Adapter-q8_0.gguf
     environment:
       LLAMA_ARG_MODEL: /models/Vikhr-Llama-3.2-1B-Q8_0.gguf
       LLAMA_ARG_CTX_SIZE: 2048
@@ -22,10 +22,11 @@ services:
       - MONGO_DATABASE=database
       - MONGO_COLLECTION=documents
 
-      - SUMMARIZE_LORA_ADAPTER_ID=0
+      - SUMMARY_LORA_ADAPTER_ID=0
       - GENERATE_LORA_ADAPTER_ID=1
     depends_on:
       - mongodb
+      - tika
 
   mongodb:
     image: mongo
@@ -33,6 +34,9 @@ services:
       - "8001:27017"
     volumes:
       - mongodb_data:/data/db
+
+  tika:
+    image: apache/tika
 
 volumes:
   mongodb_data:
