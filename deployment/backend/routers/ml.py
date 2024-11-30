@@ -1,13 +1,14 @@
 import os
+import io
 import json
 
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import StreamingResponse
 
 from common.ml.schemes import *
 from common.ml.utils import *
 
-from common.parser.utils import *
+from common.parser.utils import parse_document, text_to_docx_bytes
 
 from common.db.schemes import *
 from common.db.utils import *
@@ -15,7 +16,7 @@ from common.db.utils import *
 
 router = APIRouter()
 
-# Initialize the document classifier
+# initialize the document classifier
 docs_classifier = DocsClassifier(model_path="models/docs-classifier", tokenizer_path="models/docs-classifier")
 
 
@@ -76,14 +77,14 @@ def summarize(input: SummarizeInputModel, n_sentences_to_keep: int = 2) -> str:
 
 
 @router.post("/classify")
-def classify(input: ClassifyInputModel) -> ClassifyOutputModel:
+async def classify(file: UploadFile = File(...), threshold: float = 0.4) -> ClassifyOutputModel:
     """
     Processes a request for document classification.
 
     Parameters
     ----------
-    input: ClassifyInputModeltext 
-        Input with **text** and **thereshold**(str).
+    file: UploadFile = File(...) 
+        Uploaded file.
         
     Return
     ----------
@@ -91,9 +92,14 @@ def classify(input: ClassifyInputModel) -> ClassifyOutputModel:
         Output with **label** and **score**.
 
     """
-    pred = docs_classifier.predict(input.text)[0]   
-    if pred['score'] < input.thereshold:
-        pred['label'] = 'Не определен'
+    document = await file.read()
+    document = parse_document(document)
+
+    pred = docs_classifier.predict(document)[0]   
+    
+    if pred['score'] < threshold:
+        pred['label'] = "Не определен"
+    
     return ClassifyOutputModel(label=pred["label"], score=pred["score"])
 
 

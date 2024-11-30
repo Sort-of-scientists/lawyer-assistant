@@ -200,7 +200,7 @@ class DocsClassifier:
             model_path (str): Path to the model for loading.
             tokenizer_path (str): Path to the tokenizer for loading.
         """
-        self.classifier = pipeline("text-classification", model=model_path, tokenizer=tokenizer_path)
+        self.classifier = pipeline("text-classification", model=model_path, tokenizer=tokenizer_path, max_length=2048)
 
     def predict(self, text: str) -> List[dict]:
         """
