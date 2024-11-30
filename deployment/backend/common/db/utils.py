@@ -28,9 +28,9 @@ def upload_document(document: Document):
 
     collection.insert_one(document={
         "file": document.file,
-        "info": document.info,
-        "type": document.type,
-        "entities": document.entities,
+        "info": document.info.model_dump(),
+        "type": document.type.model_dump(),
+        "entities": [ent.model_dump() for ent in document.entities],
         "timestamp": datetime.now()
     })
 
