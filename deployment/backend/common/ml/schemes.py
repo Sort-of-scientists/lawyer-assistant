@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict
+from typing import Dict, List
 
 
 class SamplingParams(BaseModel):
@@ -100,11 +100,41 @@ class EntityRecognizeInputModel(BaseModel):
     pass
 
 
-class EntityRecognizeOutputModel(BaseModel):
+class EntityRecognizeResult(BaseModel):
     """
-    A model to represent input to **/entity-recognize** method.
+    A model representing the output of named entity recognition (NER).
 
     Attributes
     ----------
+    value : str
+        The recognized entity value.
+
+    label : str
+        The type of the recognized entity (e.g., PERSON, ORGANIZATION).
+
+    score : float
+        The confidence score of the recognition (a value between 0 and 1).
+
+    start : int
+        The starting index of the recognized entity in the input text.
+
+    end : int
+        The ending index of the recognized entity in the input text.
     """
-    pass
+    value: str
+    label: str
+    score: float
+    start: int
+    end: int
+
+
+class EntityRecognizeOutputModel(BaseModel):
+    """
+    A model to represent the output from the **/entity-recognize** method.
+
+    Attributes
+    ----------
+    recognizer_result : List[EntityRecognizeResult]
+        A list of recognized entities and their associated details from the input text.
+    """
+    recognizer_result: List[EntityRecognizeResult]

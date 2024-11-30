@@ -6,3 +6,5 @@ pymongo
 transformers
 tika
 python-multipart
+presidio-analyzer==2.2.355
+flair==0.14.0
