@@ -52,24 +52,34 @@ async def generate(input: GenerateInputModel) -> StreamingResponse:
 
 
 @router.post("/summarize")
-def summarize(input: SummarizeInputModel, n_sentences_to_keep: int = 2) -> str:
+async def summarize(file: UploadFile = File(...), n_sentences_to_keep: int = 2, n_predict: int = 300, temperature: float = 0.8) -> str:
     """
     A route to make a summary of the input text.
 
     Parameters
     ----------
-    input : InputModel
-        Input with **text** and sampling **params**,
-    n_sentences_to_keep : int, optional
-        Number of sentences to keep in result summary.
-    """
+    file : UploadFile = File(...),
+        Uploaded file to summarize.
 
+    n_sentences_to_keep : int, optional
+        Number of sentences to keep in result summary,
+    
+    n_predict : int
+        Number of tokens to generate in summary,
+
+    temperature : float
+        Temperature of generation.
+    """
     change_current_lora_adapter(adapter_id=int(os.environ.get("SUMMARY_LORA_ADAPTER_ID")))
 
+    # parse document
+    document = await file.read()
+    document = parse_document(document)
+
     # preprocess input text
-    text = get_preprocessed_text(text=input.text)
+    text = get_preprocessed_text(text=document)
     # make request to llama.cpp server
-    summary = get_completion(prompt=text, params=input.params.model_dump())
+    summary = get_completion(prompt=text, params={"n_predict": n_predict, "temperature": temperature})
     # reduce summary
     summary = get_reduced_summary(summary=summary, n_sentences_to_keep=n_sentences_to_keep)
 
