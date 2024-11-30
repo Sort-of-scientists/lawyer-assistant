@@ -38,8 +38,7 @@ class FlairRecognizer(EntityRecognizer):
             supported_entities: Optional[List[str]] = None,
             check_label_groups: Optional[Tuple[Set, Set]] = None,
     ):
-        self.model = SequenceTagger.load(
-            r"models/final-model.pt")
+        self.model = SequenceTagger.load("./models/final-model.pt")
 
         self.check_label_groups = (
             check_label_groups if check_label_groups else self.CHECK_LABEL_GROUPS
