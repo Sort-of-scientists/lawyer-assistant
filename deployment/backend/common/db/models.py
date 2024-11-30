@@ -38,11 +38,10 @@ class DocumentInfo(BaseModel):
     Attributes
     ----------
     header : str
-    desciption: str
+    description: str
     """
-
     header: str
-    desciption: str
+    description: str
 
 
 class DocumentType(BaseModel):
@@ -71,7 +70,9 @@ class Document(BaseModel):
     type : DocumentType
     entities : List[Entity]
     """
-    file: bytes
+    id: str | None = None
+
+    file: bytes | None = None
     info: DocumentInfo
 
     type: DocumentType

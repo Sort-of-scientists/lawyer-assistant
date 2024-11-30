@@ -1,13 +1,16 @@
 import os
+import requests
 
 from pymongo import MongoClient
+from bson import ObjectId
+from fastapi import HTTPException
 
 from pymongo.collection import Collection
 from typing import List, Dict
 
 from datetime import datetime
 
-from .models import Document
+from .models import *
 
 
 # client = MongoClient(os.environ.get("MONGO_URI"))
@@ -35,11 +38,28 @@ def upload_document(document: Document):
     })
 
 
-def delete_document(document_id: int):
-    pass
+def delete_document(document_id: str):
+    """
+    Delete document by its ID.
+
+    Parameters
+    ----------
+    document_id : int
+    Returns
+    -------
+    "OK!" if delete was success
+    """
+
+    try:
+        collection.delete_one({"_id": ObjectId(document_id)})
+
+        return "OK!"
+    
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete document from database: {e}")
 
 
-def get_all_documents_without_bytes() -> List[bytes]:
+def get_all_documents_without_bytes() -> List[Document]:
     """
     Return all documents from collection.
 
@@ -52,10 +72,50 @@ def get_all_documents_without_bytes() -> List[bytes]:
     List[bytes]
     """
 
-    documents = collection.find({}, {"bytes": 0})
+    documents = []
 
-    documents = list(documents)
+    for document in collection.find({}, {"file": 0}).sort({"timestamp": -1}):
+        documents.append(
+            Document(
+                id=str(document["_id"]),
+                info=DocumentInfo(
+                    header=document["info"]["header"],
+                    description=document["info"]["description"]
+                ),
+                type=DocumentType(
+                    label=document["type"]["label"],
+                    score=document["type"]["score"]
+                ),
 
-    print(documents)
+                entities=[Entity(**ent) for ent in document["entities"]]
+            )
+        )
 
     return documents
+
+
+def get_document_by_id(document_id: str, add_file: bool = False) -> Document:
+    """
+    Get document by **document_id** without field **file**.
+
+    Parameters
+    ----------
+    document_id : str
+
+    Returns
+    -------
+    Document
+    """
+
+    try:
+        if add_file:
+            document = collection.find({"_id": ObjectId(document_id)})
+        else:
+            document = collection.find({"_id": ObjectId(document_id)}, {"file": 0})
+
+        document = list(document)
+
+        return document[0]
+    
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get document with id {document_id}: {e}")
