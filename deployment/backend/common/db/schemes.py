@@ -75,6 +75,7 @@ class Document(BaseModel):
     """
     id: str | None = None
 
+    name: str | None = None
     file: bytes | None = None
     info: DocumentInfo | None = None
 

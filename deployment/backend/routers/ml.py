@@ -1,12 +1,15 @@
 import os
 import io
 import json
+import base64
 
 import common.ml.utils as ml_utils
 import common.db.utils as db_utils
 
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import StreamingResponse
+
+from datetime import datetime
 
 from common.ml.schemes import *
 
@@ -62,9 +65,10 @@ async def generate(input: GenerateInputModel) -> StreamingResponse:
     # upload document to mongodb
     db_utils.upload_document(
         Document(
-            file=document_as_byte, 
+            file=document_as_byte,
+            name=f"{input.type}",
             info=DocumentInfo(
-                header=input.type, description=", ".join(list(input.fields.values()))
+                header=input.type, description="Описание документа"
             ),
             type=DocumentType(
                 label=input.type, score=1.0
@@ -116,7 +120,7 @@ async def summarize(file: UploadFile = File(...), n_sentences_to_keep: int = 2, 
 
 
 @router.post("/classify")
-def classify(input: ClassifyInputModel) -> ClassifyOutputModel:
+def classify(text: str) -> ClassifyOutputModel:
     """
     Processes a request for document classification.
 
@@ -132,7 +136,7 @@ def classify(input: ClassifyInputModel) -> ClassifyOutputModel:
 
     """
 
-    pred = docs_classifier.predict(input.text)[0]   
+    pred = docs_classifier.predict(text)[0]   
     
     if pred['score'] < docs_classifier.DEFAULT_THRESHOLD:
         pred['label'] = "Не определен"
@@ -141,7 +145,32 @@ def classify(input: ClassifyInputModel) -> ClassifyOutputModel:
 
 
 @router.post("/entity-recognize")
-def entity_recognize(input: EntityRecognizeInputModel) -> List[EntityRecognizeOutputModel]:
+def entity_recognize(text: str) -> List[EntityRecognizeOutputModel]:    
     return [EntityRecognizeOutputModel(
         label="Город", value="Воронеж", score=1.0, start=0, end=10
     )]
+
+
+@router.post("/upsert")
+async def upsert_document(file: UploadFile = File(...), document_id: str | None = None):
+    file_content = await file.read()
+    text = parse_document(file_content)
+
+    classifier_output = classify(text)
+    ner_output = entity_recognize(text)
+
+    info = DocumentInfo(header=classifier_output.label, description=classifier_output.label)
+    type = DocumentType(label=classifier_output.label, score=classifier_output.score)
+    ents = [Entity(value=ent.value, label=ent.label, score=ent.score, start=ent.start, end=ent.end) for ent in ner_output]
+    
+    document = Document(file=text_to_docx_bytes(text), name=file.filename, info=info, type=type, entities=ents)
+    
+    if document_id is None:
+        return db_utils.upload_document(
+            document=document
+        )
+
+    else:
+        return db_utils.update_document(
+            document_id=document_id, new_document=document
+        )

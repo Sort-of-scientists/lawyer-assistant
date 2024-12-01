@@ -3,6 +3,8 @@ import traceback
 import requests
 import common.db.utils as db_utils
 
+from urllib.parse import quote
+
 from fastapi import APIRouter, UploadFile, File
 from pydantic import BaseModel
 
@@ -33,14 +35,16 @@ def delete(document_id: str) -> str:
 
 
 @router.get("/download")
-def download(document_id: str, download_type: Literal["docx", "pdf"] = "docx") -> StreamingResponse:
+def download(document_id: str) -> StreamingResponse:
     document = db_utils.get_document_by_id(document_id, add_file=True)
 
     file_like_document = io.BytesIO(document["file"])
     file_like_document.seek(0)
+
+    filename = quote(document['name'], encoding='utf-8')
     
     return StreamingResponse(
             file_like_document, 
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
-            headers={"Content-Disposition": f"attachment; filename=document.{download_type}"}
+            headers={"Content-Disposition": f"attachment; filename={filename}.docx"}
         )
