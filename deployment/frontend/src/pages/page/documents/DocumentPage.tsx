@@ -2,7 +2,6 @@ import React, { type ReactElement, useState } from 'react';
 import { PageTitle } from '@/features/page-title/PageTitle.tsx';
 import { DocumentsMenu } from '@/widgets/document-page/DocumentsMenu.tsx';
 import styled from 'styled-components';
-import { SearchOutlined } from '@ant-design/icons';
 import {
   DocumentTypeSelect,
   IChooseFileType,
@@ -10,15 +9,13 @@ import {
 import { IDocumentObject } from '@/shared/interfaces/document.interface.ts';
 import axios from 'axios';
 import { Button, message } from 'antd';
+import { api } from '@/path.ts';
 
 export const DocumentPage = (): ReactElement => {
   const [chooseFileType, setChooseFileType] = useState<IChooseFileType>({ value: 'Выберете тип' });
   const [messageApi, contextHolder] = message.useMessage();
   const [documents, setDocument] = useState<IDocumentObject[]>([]);
-  const fetchData = async (
-    isMounted?: boolean,
-    url = `${import.meta.env.VITE_API_URL}/documents`,
-  ): Promise<void> => {
+  const fetchData = async (isMounted?: boolean, url = `${api}/documents`): Promise<void> => {
     try {
       const response: IDocumentObject[] = (await axios.get(url)).data;
       if (isMounted) {
@@ -29,7 +26,7 @@ export const DocumentPage = (): ReactElement => {
     }
   };
   const onSelect = (v: IChooseFileType) => {
-    void fetchData(true, `${import.meta.env.VITE_API_URL}/documents`);
+    void fetchData(true, `${api}/documents`);
   };
   return (
     <>
