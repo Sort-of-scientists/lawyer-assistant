@@ -29,5 +29,5 @@ const StyledSelect = styled(Select)`
   &:focus {
     border-color: var(--secondary-color) !important;
     box-shadow: 0px 1px 6px var(--secondary-color) !important;
-  }
+  
 `;

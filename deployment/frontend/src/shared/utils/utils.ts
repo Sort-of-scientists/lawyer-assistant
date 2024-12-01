@@ -1,4 +1,66 @@
+import Buffer from 'buffer';
+
 type DeepEqualResult = boolean | { [key: string]: DeepEqualResult };
+
+export const downloadFile = (blob: Blob | undefined, text: string): void => {
+  if (!blob) return;
+  const url = window.URL.createObjectURL(new Blob([blob]));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', text);
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  if (link.parentNode) {
+    link.parentNode.removeChild(link);
+  }
+};
+
+export interface IFileWithInfoResponse {
+  content: string;
+  fileId: string;
+  fileName: string;
+  contentType: string;
+  size: number;
+}
+export const blobToBase64 = async (
+  blob: Blob | undefined,
+): Promise<undefined | string | null | ArrayBuffer> => {
+  if (!blob) return;
+  const reader = new FileReader();
+  reader.readAsDataURL(blob);
+  return await new Promise(resolve => {
+    reader.onloadend = () => {
+      resolve(reader.result);
+    };
+  });
+};
+export const makeFileFromResponse = (response: IFileWithInfoResponse | undefined) => {
+  if (!response) return;
+  const { content, contentType } = response;
+  const blob = new Blob([Buffer.Buffer.from(content, 'base64')], { type: contentType });
+  const file: any = {
+    id: response?.fileId,
+    name: response.fileName,
+    content: response.content,
+    uid: response.fileId,
+    fileName: response.fileName,
+    type: response.contentType,
+    size: response.size,
+    fileId: response.fileId,
+    url: URL.createObjectURL(blob),
+  };
+
+  file.originFileObj = content;
+
+  void blobToBase64(blob).then(r => {
+    if (!r || typeof r !== 'string') return;
+    file.preview = r;
+  });
+  return file;
+};
 
 export function deepEqual(obj1: any, obj2: any): DeepEqualResult {
   // Base case: If both objects are identical, return true.
@@ -122,19 +184,6 @@ export const isArraysEqual = (array1: string[], array2: string[]): boolean => {
 
 export const isObject = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null;
-};
-
-export const blobToBase64 = async (
-  blob: Blob | undefined,
-): Promise<undefined | string | null | ArrayBuffer> => {
-  if (!blob) return;
-  const reader = new FileReader();
-  reader.readAsDataURL(blob);
-  return await new Promise(resolve => {
-    reader.onloadend = () => {
-      resolve(reader.result);
-    };
-  });
 };
 
 export const isEmptyString = (str: string): boolean => {

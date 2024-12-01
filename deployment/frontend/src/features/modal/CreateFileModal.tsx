@@ -2,15 +2,24 @@ import React, { type ReactElement } from 'react';
 import { Button, Form, Modal } from 'antd';
 import { BaseInput } from '@/features/input/BaseInput.tsx';
 import styled from 'styled-components';
-import { CenteredContent } from '@/app/styles/content/ContentStyle.tsx';
-import { Formik } from 'formik';
+import { Formik, FieldArray, FormikTouched, FormikValues, FormikErrors } from 'formik';
 import TextArea from 'antd/es/input/TextArea';
+import * as Yup from 'yup';
 
 export interface ICreateDocument {
   seller: string;
   buyer: string;
   price: string;
   subject: string;
+  customFields: Array<{ name: string; value: string }>;
+}
+
+interface FormErrors {
+  seller?: string;
+  buyer?: string;
+  price?: string;
+  subject?: string;
+  customFields?: Array<{ name?: string; value?: string }>;
 }
 
 interface IEditFileModal {
@@ -18,12 +27,14 @@ interface IEditFileModal {
   handleCancel: () => void;
   open: boolean;
 }
+
 export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal): ReactElement => {
   const initialValues: ICreateDocument = {
     seller: '',
     buyer: '',
     price: '',
     subject: '',
+    customFields: [],
   };
 
   const onSubmit = (values, { setSubmitting }) => {
@@ -31,10 +42,31 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
     setSubmitting(false);
     handleOk(values as ICreateDocument);
   };
+  const validationSchema = Yup.object().shape({
+    seller: Yup.string().required('Продавец обязателен'),
+    buyer: Yup.string().required('Покупатель обязателен'),
+    price: Yup.string().required('Цена обязательна'),
+    subject: Yup.string().required('Предмет договора обязателен'),
+    customFields: Yup.array()
+      .of(
+        Yup.object().shape({
+          name: Yup.string().required('Название обязательно'),
+          value: Yup.string().required('Значение обязательно'),
+        }),
+      )
+      .required('Кастомные поля обязательны'),
+  });
 
+  const handlerError = (
+    touched: FormikTouched<FormikValues>,
+    errors: FormikErrors<FormikValues>,
+    filed: string,
+  ) => {
+    return errors[filed] && touched[filed] && <Error>Поле обязательное для заполения!</Error>;
+  };
   return (
     <>
-      <Formik initialValues={initialValues} onSubmit={onSubmit}>
+      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {({
           values,
           errors,
@@ -49,13 +81,12 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
             open={open}
             title={<TitleWrapper>Создать документ</TitleWrapper>}
             onCancel={handleCancel}
-            width={400}
+            width={700}
             style={{ textAlign: 'center' }}
             footer={[
               <StyledButton
-                type="submit"
                 onClick={() => {
-                  onSubmit(values, { setSubmitting });
+                  handleSubmit();
                 }}
                 disabled={isSubmitting}
               >
@@ -65,43 +96,86 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
           >
             <Wrapper>
               <Container>
-                <Form onSubmit={handleSubmit}>
+                <Form>
                   <Text>Продавец</Text>
+                  {handlerError(touched, errors, 'seller')}
                   <BaseInput
-                    type="seller"
                     name="seller"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    placeholder={'Имя продавца'}
                     value={values.seller}
+                    placeholder="Имя продавца"
                   />
                   <Text>Покупатель</Text>
+                  {handlerError(touched, errors, 'buyer')}
                   <BaseInput
-                    type="buyer"
                     name="buyer"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.buyer}
-                    placeholder={'Имя покупателя'}
+                    placeholder="Имя покупателя"
                   />
                   <Text>Цена</Text>
+                  {handlerError(touched, errors, 'price')}
                   <BaseInput
-                    type="price"
                     name="price"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.price}
-                    placeholder={'Стоимость товара'}
+                    placeholder="Стоимость товара"
                   />
-                  <Text> Предмет договора</Text>
+                  <Text>Предмет договора</Text>
+                  {handlerError(touched, errors, 'subject')}
                   <TextArea
-                    type="subject"
                     name="subject"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.subject}
-                    placeholder={'Напишите о своей предметной области'}
+                    placeholder="Напишите о своей предметной области"
                   />
+                  <Text>Кастомные поля</Text>
+                  <FieldArray name="customFields">
+                    {({ push, remove }) => (
+                      <>
+                        {values.customFields.map((field, index) => (
+                          <CustomField key={index}>
+                            <StyledCustomField>
+                              {errors?.customFields &&
+                                errors?.customFields?.[index] &&
+                                (errors.customFields?.[index] as any)?.name && (
+                                  <Error>Кастомные поля обязательны</Error>
+                                )}
+                              <BaseInput
+                                name={`customFields[${index}].name`}
+                                placeholder="Название"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                value={field.name}
+                              />
+                            </StyledCustomField>
+                            <StyledCustomField>
+                              {errors.customFields &&
+                                errors.customFields[index] &&
+                                (errors.customFields?.[index] as any)?.value && (
+                                  <Error>Кастомные поля обязательны</Error>
+                                )}
+                              <BaseInput
+                                name={`customFields[${index}].value`}
+                                placeholder="Значение"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                value={field.value}
+                              />
+                            </StyledCustomField>
+                            <RemoveButton onClick={() => remove(index)}>Удалить</RemoveButton>
+                          </CustomField>
+                        ))}
+                        <AddButton onClick={() => push({ name: '', value: '' })}>
+                          Добавить поле
+                        </AddButton>
+                      </>
+                    )}
+                  </FieldArray>
                 </Form>
               </Container>
             </Wrapper>
@@ -111,6 +185,15 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
     </>
   );
 };
+const StyledCustomField = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Error = styled.div`
+  color: var(--error-color);
+  line-height: 1;
+`;
 
 const Text = styled.h1`
   all: unset;
@@ -130,14 +213,31 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  ${CenteredContent};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const CustomField = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+`;
+
+const AddButton = styled(Button)`
+  width: 100%;
+  margin-top: 10px;
+`;
+
+const RemoveButton = styled(Button)`
+  background-color: var(--error-color);
+  color: white;
 `;
 
 const StyledButton = styled(Button)`
   width: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   margin: 0 auto;
   background-color: var(--secondary-background-color);
   color: var(--primary-color);
