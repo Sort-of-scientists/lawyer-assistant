@@ -19,6 +19,7 @@ from common.db.schemes import *
 
 from common.db.utils import *
 from common.ml.ner import DocEntityRecognizer
+from common.ml.utils import DocsClassifier
 
 router = APIRouter()
 
@@ -90,14 +91,14 @@ async def generate(input: GenerateInputModel) -> StreamingResponse:
 
 
 @router.post("/summarize")
-async def summarize(file: UploadFile = File(...), n_sentences_to_keep: int = 2, n_predict: int = 300, temperature: float = 0.8) -> str:
+def summarize(document_id: str, n_sentences_to_keep: int = 2, n_predict: int = 300, temperature: float = 0.8) -> str:
     """
     A route to make a summary of the input text.
 
     Parameters
     ----------
-    file : UploadFile = File(...),
-        Uploaded file to summarize.
+    document_id : str
+        Document ID to summarize,
 
     n_sentences_to_keep : int, optional
         Number of sentences to keep in result summary,
@@ -110,12 +111,14 @@ async def summarize(file: UploadFile = File(...), n_sentences_to_keep: int = 2, 
     """
     ml_utils.change_current_lora_adapter(adapter_id=int(os.environ.get("SUMMARY_LORA_ADAPTER_ID")))
 
+    # get document from database
+    document = db_utils.get_document_by_id(document_id=document_id, add_file=True)
     # parse document
-    document = await file.read()
-    document = parse_document(document)
-
+    document = parse_document(document["file"])
     # preprocess input text
     text = ml_utils.get_preprocessed_text(text=document)
+    # apply a system prompt 
+    text = SYSTEM_PROMPT.format(text, "")
     # make request to llama.cpp server
     summary = ml_utils.get_completion(prompt=text, params={"n_predict": n_predict, "temperature": temperature})
     # reduce summary
@@ -150,14 +153,12 @@ def classify(text: str) -> ClassifyOutputModel:
 
 
 @router.post("/entity-recognize")
-async def entity_recognize(file: UploadFile = File(...)) -> List: #List[EntityRecognizeResult]:
-    document = await file.read()
-    document: str = parse_document(document)
-
-    recognizer_result = docs_ner.predict(document)
+def entity_recognize(text: str) -> List[EntityRecognizeResult]:
+    recognizer_result = docs_ner.predict(text)
+    
+    recognizer_result = [EntityRecognizeResult(**res) for res in recognizer_result]
+    
     return recognizer_result
-    # return [EntityRecognizeResult(**recognizer) for recognizer in recognizer_result]
-    # return EntityRecognizeOutputModel(recognizer_result=recognizer_result)
 
 
 @router.post("/upsert")
