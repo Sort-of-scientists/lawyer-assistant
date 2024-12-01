@@ -104,9 +104,11 @@ async def classify(file: UploadFile = File(...), threshold: float = 0.4) -> Clas
 
 
 @router.post("/entity-recognize")
-async def entity_recognize(file: UploadFile = File(...)) -> EntityRecognizeOutputModel:
+async def entity_recognize(file: UploadFile = File(...)) -> List: #List[EntityRecognizeResult]:
     document = await file.read()
     document: str = parse_document(document)
 
     recognizer_result = docs_ner.predict(document)
-    return EntityRecognizeOutputModel(recognizer_result=recognizer_result)
+    return recognizer_result
+    # return [EntityRecognizeResult(**recognizer) for recognizer in recognizer_result]
+    # return EntityRecognizeOutputModel(recognizer_result=recognizer_result)

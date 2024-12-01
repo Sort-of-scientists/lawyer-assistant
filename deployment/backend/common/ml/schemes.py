@@ -137,4 +137,4 @@ class EntityRecognizeOutputModel(BaseModel):
     recognizer_result : List[EntityRecognizeResult]
         A list of recognized entities and their associated details from the input text.
     """
-    recognizer_result: List[EntityRecognizeResult]
+    recognizer_result: List  # [EntityRecognizeResult]
