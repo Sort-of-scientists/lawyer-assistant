@@ -1,15 +1,25 @@
-import React, { type ReactElement, useState } from 'react';
-import { Button, Input } from 'antd';
+import React, { type ReactElement, useEffect, useState } from 'react';
+import { Button, Input, message, SelectProps } from 'antd';
 import styled from 'styled-components';
 import { BaseInput } from '@/features/input/BaseInput.tsx';
 import { CreateFileModal, ICreateDocument } from '@/features/modal/CreateFileModal.tsx';
 import { useNavigate } from 'react-router-dom';
 import { DOCUMENTS } from '@/shared/constants/paths.ts';
+import { BaseSelect } from '@/features/select/BaseSelect.tsx';
+import axios from 'axios';
+import {
+  DocumentTypeSelect,
+  IChooseFileType,
+} from '@/widgets/document-type/DocumentTypeSelect.tsx';
 
 export const MainPageInfo = (): ReactElement => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [chooseFileType, setChooseFileType] = useState<IChooseFileType>({ value: 'Загрузка' });
+
   const handleCancel = () => {
     setOpen(false);
   };
@@ -19,29 +29,54 @@ export const MainPageInfo = (): ReactElement => {
     setOpen(true);
   };
 
-  const handlerEditOnClick = (value: ICreateDocument) => {
-    console.log('value', value);
+  useEffect(() => {
+    if (loading) {
+      void messageApi.loading({ content: 'Генерация файла', duration: 9000 });
+    }
+  }, [loading]);
+  const handlerEditOnClick = (value: ICreateDocument): void => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setOpen(false);
-      navigate(DOCUMENTS);
-    }, 3000);
+    const { customFields, ...rest } = value;
+    const fields = { ...rest };
+    for (const field of customFields) {
+      fields[field.name] = field.value;
+    }
+
+    const params = {
+      n_predict: 2000,
+      temperature: 0.01,
+    };
+    const data = { type: chooseFileType.value, fields: { ...fields }, params };
+    void (async (): Promise<void> => {
+      await axios
+        .post(`${import.meta.env.VITE_API_URL}/generate`, data)
+        .then(() => navigate(DOCUMENTS))
+        .catch(e => messageApi.error(`Ошибка создания файла: ${e}`));
+    })();
   };
+
   return (
-    <Wrapper>
-      <MainContainer>
-        <CreateFileModal handleCancel={handleCancel} open={open} handleOk={handlerEditOnClick} />
-        <TextContainer>
-          <TitleText>Помощник юриста</TitleText>
-          <Description>Создайте новый документ по шаблону</Description>
-        </TextContainer>
-        <SearchContainer>
-          <StyledInput placeholder={'Купли-продажи'} />
-          <StyledButton onClick={showModal}>Вперед!</StyledButton>
-        </SearchContainer>
-      </MainContainer>
-    </Wrapper>
+    <>
+      {contextHolder}
+      <Wrapper>
+        <MainContainer>
+          <CreateFileModal handleCancel={handleCancel} open={open} handleOk={handlerEditOnClick} />
+          <TextContainer>
+            <TitleText>Помощник юриста</TitleText>
+            <Description>Создайте новый документ по шаблону</Description>
+          </TextContainer>
+          <SearchContainer>
+            <StyledSelect
+              chooseFileType={chooseFileType}
+              setChooseFileType={setChooseFileType}
+              placeholder={'Купли-продажи'}
+              defaultSelection={true}
+            />
+            <StyledButton onClick={showModal}>Вперед!</StyledButton>
+          </SearchContainer>
+        </MainContainer>
+      </Wrapper>
+    </>
   );
 };
 
@@ -100,10 +135,9 @@ const SearchContainer = styled.div`
   gap: 12px;
 `;
 
-const StyledInput = styled(BaseInput)`
+const StyledSelect = styled(DocumentTypeSelect)`
+  width: 80%;
   height: 40px;
-  width: 70%;
-  border-radius: 8px;
 `;
 
 const StyledButton = styled(Button)`

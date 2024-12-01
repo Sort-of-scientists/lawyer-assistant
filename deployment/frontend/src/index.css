@@ -1,15 +1,12 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  color-scheme: dark light ;
-
-
+  color-scheme: dark light;
 }
 
 button {
   all: unset;
   cursor: pointer;
 }
-
 
 @font-face {
   font-family: 'Gotham Pro';
