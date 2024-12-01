@@ -49,9 +49,6 @@ export const DocEditor = ({ fileUrl }: IDocEditor): ReactElement => {
         },
       ],
     });
-    void (async (): Promise<void> => {
-      const result = await mammoth.convertToHtml({ arrayBuffer });
-    })();
 
     Packer.toBlob(newDoc).then(blob => {
       const link = document?.createElement('a');

@@ -90,8 +90,8 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
             <Wrapper>
               <Container>
                 <Form>
-                  {handlerError(touched, errors, 'seller')}
                   <Text>Продавец</Text>
+                  {handlerError(touched, errors, 'seller')}
                   <BaseInput
                     name="seller"
                     onChange={handleChange}
@@ -99,8 +99,8 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
                     value={values.seller}
                     placeholder="Имя продавца"
                   />
-                  {handlerError(touched, errors, 'buyer')}
                   <Text>Покупатель</Text>
+                  {handlerError(touched, errors, 'buyer')}
                   <BaseInput
                     name="buyer"
                     onChange={handleChange}
@@ -108,8 +108,8 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
                     value={values.buyer}
                     placeholder="Имя покупателя"
                   />
-                  {handlerError(touched, errors, 'price')}
                   <Text>Цена</Text>
+                  {handlerError(touched, errors, 'price')}
                   <BaseInput
                     name="price"
                     onChange={handleChange}
@@ -117,8 +117,8 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
                     value={values.price}
                     placeholder="Стоимость товара"
                   />
-                  {handlerError(touched, errors, 'subject')}
                   <Text>Предмет договора</Text>
+                  {handlerError(touched, errors, 'subject')}
                   <TextArea
                     name="subject"
                     onChange={handleChange}
@@ -132,30 +132,34 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
                       <>
                         {values.customFields.map((field, index) => (
                           <CustomField key={index}>
-                            {errors.customFields &&
-                              errors.customFields[index] &&
-                              errors.customFields[index].name && (
-                                <Error>Кастомные поля обязательны</Error>
-                              )}
-                            <BaseInput
-                              name={`customFields[${index}].name`}
-                              placeholder="Название"
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              value={field.name}
-                            />
-                            {errors.customFields &&
-                              errors.customFields[index] &&
-                              errors.customFields[index].value && (
-                                <Error>Кастомные поля обязательны</Error>
-                              )}
-                            <BaseInput
-                              name={`customFields[${index}].value`}
-                              placeholder="Значение"
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              value={field.value}
-                            />
+                            <StyledCustomField>
+                              {errors.customFields &&
+                                errors.customFields[index] &&
+                                errors.customFields[index].name && (
+                                  <Error>Кастомные поля обязательны</Error>
+                                )}
+                              <BaseInput
+                                name={`customFields[${index}].name`}
+                                placeholder="Название"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                value={field.name}
+                              />
+                            </StyledCustomField>
+                            <StyledCustomField>
+                              {errors.customFields &&
+                                errors.customFields[index] &&
+                                errors.customFields[index].value && (
+                                  <Error>Кастомные поля обязательны</Error>
+                                )}
+                              <BaseInput
+                                name={`customFields[${index}].value`}
+                                placeholder="Значение"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                value={field.value}
+                              />
+                            </StyledCustomField>
                             <RemoveButton onClick={() => remove(index)} type="button">
                               Удалить
                             </RemoveButton>
@@ -176,6 +180,10 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
     </>
   );
 };
+const StyledCustomField = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
 const Error = styled.div`
   color: var(--error-color);
