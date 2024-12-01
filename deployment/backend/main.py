@@ -11,6 +11,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"], 
     allow_headers=["*"], 
+
 )
 
 app.include_router(ml.router)
@@ -19,4 +20,4 @@ app.include_router(forms.router)
 
 @app.get("/")
 def root():
-    return {}
+    return {"test": "success"}
