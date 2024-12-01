@@ -16,7 +16,7 @@
 7. Перейти в папку deployment и собрать приложение:
    - ```cd deployment```
    - ```docker-compose up --build```
-8. Перейти на http://0.0.0.0:8018/main
+8. Перейти на http://0.0.0.0:8018/
 
 # Инструкция по взаимодействию с UI
 https://docs.google.com/document/d/1sj0z-wmZl1iY0Z8z0lTckUFw-intcrzni3oKj4s2i6Q/edit?usp=sharing
