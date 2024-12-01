@@ -55,6 +55,10 @@ class FlairRecognizer:
         text_skip = 0
         for text, sentence in zip(texts, sentences):
             for ent in sentence.get_spans("ner"):
+
+                if ent.score < 0.7:  # отсекаем сомнительные сущности
+                    continue
+
                 flair_result = self._convert_to_recognizer_result(ent, text_skip)
                 results.append(flair_result)
             text_skip += len(text) + len(split_symbol)
