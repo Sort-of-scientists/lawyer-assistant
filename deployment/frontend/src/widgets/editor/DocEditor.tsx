@@ -6,6 +6,7 @@ import 'react-quill/dist/quill.snow.css';
 import { Document, Packer, Paragraph, TextRun } from 'docx';
 import styled from 'styled-components';
 import { Button } from 'antd';
+
 interface IDocEditor {
   fileUrl: string;
 }
@@ -48,6 +49,9 @@ export const DocEditor = ({ fileUrl }: IDocEditor): ReactElement => {
         },
       ],
     });
+    void (async (): Promise<void> => {
+      const result = await mammoth.convertToHtml({ arrayBuffer });
+    })();
 
     Packer.toBlob(newDoc).then(blob => {
       const link = document?.createElement('a');

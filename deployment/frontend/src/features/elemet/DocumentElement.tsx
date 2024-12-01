@@ -8,6 +8,8 @@ import { EditFileModal } from '@/features/modal/EditFileModal.tsx';
 import { IDocumentObject } from '@/shared/interfaces/document.interface.ts';
 import axios from 'axios';
 import { downloadFile } from '@/shared/utils/utils.ts';
+import { useNavigate } from 'react-router-dom';
+import { EDITOR } from '@/shared/constants/paths.ts';
 
 interface IDocumentElement {
   elem: IDocumentObject;
@@ -17,7 +19,7 @@ export const DocumentElement = ({ elem, fetchData }: IDocumentElement): ReactEle
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (loading) {
       void messageApi.loading({ content: 'Скачивание файла', duration: 9000 });
@@ -57,7 +59,10 @@ export const DocumentElement = ({ elem, fetchData }: IDocumentElement): ReactEle
       setOpen(false);
     }, 3000);
   };
-
+  const onClickEdit = (): void => {
+    localStorage.setItem('fileId', elem.id);
+    navigate(EDITOR);
+  };
   return (
     <DocumentWrapper>
       {contextHolder}
@@ -69,7 +74,7 @@ export const DocumentElement = ({ elem, fetchData }: IDocumentElement): ReactEle
         <Text>{elem.info.header}</Text>
         <Description>{elem.info.description}</Description>
         <ButtonWrapper>
-          <StyledButton onClick={showModal} color="default" variant="filled">
+          <StyledButton onClick={onClickEdit} color="default" variant="filled">
             Редактировать
           </StyledButton>
           <SummaryButton defaultHoverColor={'#f5f5f5'} type={'dashed'}>

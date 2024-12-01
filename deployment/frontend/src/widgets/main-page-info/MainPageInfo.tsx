@@ -16,7 +16,7 @@ export const MainPageInfo = (): ReactElement => {
 
   const [fileType, setFileType] = useState<SelectProps['options']>([]);
   const [chooseFileType, setChooseFileType] = useState<{ value: string }>({ value: 'Загрузка' });
-
+  console.log('chooseFileType', chooseFileType);
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {
@@ -45,6 +45,11 @@ export const MainPageInfo = (): ReactElement => {
     setOpen(true);
   };
 
+  useEffect(() => {
+    if (loading) {
+      void messageApi.loading({ content: 'Генерация файла', duration: 9000 });
+    }
+  }, [loading]);
   const handlerEditOnClick = (value: ICreateDocument): void => {
     setLoading(true);
     const { customFields, ...rest } = value;
@@ -54,7 +59,7 @@ export const MainPageInfo = (): ReactElement => {
     }
 
     const params = {
-      n_predict: 100,
+      n_predict: 1000,
       temperature: 0.01,
     };
     const data = { type: chooseFileType.value, fields: { ...fields }, params };
@@ -79,7 +84,7 @@ export const MainPageInfo = (): ReactElement => {
           <SearchContainer>
             <StyledSelect
               options={fileType}
-              onSelect={v => setChooseFileType(v)}
+              onSelect={v => setChooseFileType({ value: v })}
               value={chooseFileType}
               placeholder={'Купли-продажи'}
             />
