@@ -9,7 +9,7 @@ import {
 } from '@/widgets/document-type/DocumentTypeSelect.tsx';
 import { IDocumentObject } from '@/shared/interfaces/document.interface.ts';
 import axios from 'axios';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 
 export const DocumentPage = (): ReactElement => {
   const [chooseFileType, setChooseFileType] = useState<IChooseFileType>({ value: 'Выберете тип' });
@@ -38,21 +38,35 @@ export const DocumentPage = (): ReactElement => {
       <Container>
         <Wrapper>
           <Title>Ваши документы</Title>
-          <FilterContainer>
-            <DocumentTypeSelect
-              chooseFileType={chooseFileType}
-              setChooseFileType={setChooseFileType}
-              placeholder={'Выберете тип'}
-              onCustomSelect={onSelect}
-              suffixIcon={<SearchOutlined />}
-            />
-          </FilterContainer>
+          <SubHeaderWrapper>
+            <FilterContainer>
+              <DocumentTypeSelect
+                chooseFileType={chooseFileType}
+                setChooseFileType={setChooseFileType}
+                placeholder={'Выберете тип'}
+                onCustomSelect={onSelect}
+                suffixIcon={<SearchOutlined />}
+              />
+            </FilterContainer>
+            <StyledButton>Загрузить</StyledButton>
+          </SubHeaderWrapper>
           <DocumentsMenu fetchData={fetchData} documents={documents} />
         </Wrapper>
       </Container>
     </>
   );
 };
+const StyledButton = styled(Button)`
+  background-color: var(--secondary-background-color);
+  color: var(--primary-color);
+`;
+
+const SubHeaderWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
 
 const FilterContainer = styled.div`
   display: flex;
