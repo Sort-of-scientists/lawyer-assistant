@@ -1,0 +1,5 @@
+/docs-classifier
+/final-model.pt
+/Cotype-Nano-Generate-Adapter-q8_0.gguf
+/Cotype-Nano-Summary-Adapter-q8_0.gguf
+/Cotype-Nano.Q8_0.gguf

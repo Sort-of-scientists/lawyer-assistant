@@ -1,0 +1,5 @@
+outs:
+- md5: 98ee4645666405d12acefff8f21e2998
+  size: 73886464
+  hash: md5
+  path: Cotype-Nano-Summary-Adapter-q8_0.gguf

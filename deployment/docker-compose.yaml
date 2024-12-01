@@ -4,16 +4,49 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./models:/models
-    command: --lora /models/Vikhr-Llama-3.2-1B-Instruct-Summary-Adapter-q8_0.gguf
+      - ./backend/models:/models
+    command: --lora /models/Cotype-Nano-Generate-Adapter-q8_0.gguf --lora /models/Cotype-Nano-Summary-Adapter-q8_0.gguf
     environment:
-      LLAMA_ARG_MODEL: /models/Vikhr-Llama-3.2-1B-Q8_0.gguf
+      LLAMA_ARG_MODEL: /models/Cotype-Nano.Q8_0.gguf
       LLAMA_ARG_CTX_SIZE: 2048
       LLAMA_ARG_PORT: 8080
+      
+  frontend:
+      container_name: frontend
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      environment:
+        - VITE_API_URL=http://backend:8000
+      ports:
+        - 3000:3000
 
-  generator:
+  backend:
     build:
-      context: ./backend/generator
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "0.0.0.0:8000:8000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/
+      - MONGO_DATABASE=database
+      - MONGO_COLLECTION=documents
+
+      - SUMMARY_LORA_ADAPTER_ID=1
+      - GENERATE_LORA_ADAPTER_ID=0
+    depends_on:
+      - tika
+      - mongodb
+
+  mongodb:
+    image: mongo
+    ports:
+      - "8001:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  tika:
+    image: apache/tika
+
+volumes:
+  mongodb_data:

@@ -1,0 +1,6 @@
+outs:
+- md5: 3969f2269246f0d796bd755f14864f4d.dir
+  size: 120298164
+  nfiles: 6
+  hash: md5
+  path: docs-classifier
