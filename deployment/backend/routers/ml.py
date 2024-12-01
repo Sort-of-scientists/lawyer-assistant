@@ -21,6 +21,18 @@ router = APIRouter()
 docs_classifier = ml_utils.DocsClassifier(model_path="models/docs-classifier", tokenizer_path="models/docs-classifier")
 
 
+SYSTEM_PROMPT = """Ты — ИИ-помощник. Тебе дано задание: необходимо сгенерировать подробный и развернутый ответ.
+
+### Инструкция:
+Сгенерируй документ относительно входных данных
+
+### Входные данные:
+{}
+
+### Ответ:
+{}"""
+
+
 @router.post("/generate")
 async def generate(input: GenerateInputModel) -> StreamingResponse:
     """
@@ -36,9 +48,13 @@ async def generate(input: GenerateInputModel) -> StreamingResponse:
     StreamingResponse
     """
     ml_utils.change_current_lora_adapter(adapter_id=int(os.environ.get("GENERATE_LORA_ADAPTER_ID")))
+
+    # prompt to LLM
+    prompt = json.dumps(input.fields, ensure_ascii=False)
+    prompt = SYSTEM_PROMPT.format(prompt, "")
     
     # generate document based on fields:
-    document_as_text = ml_utils.get_completion(prompt=json.dumps(input.fields, ensure_ascii=False), params=input.params.model_dump())
+    document_as_text = ml_utils.get_completion(prompt=prompt, params=input.params.model_dump())
     
     # transform document in text format to byte
     document_as_byte = text_to_docx_bytes(document_as_text)
@@ -100,14 +116,14 @@ async def summarize(file: UploadFile = File(...), n_sentences_to_keep: int = 2, 
 
 
 @router.post("/classify")
-async def classify(file: UploadFile = File(...), threshold: float = 0.4) -> ClassifyOutputModel:
+def classify(input: ClassifyInputModel) -> ClassifyOutputModel:
     """
     Processes a request for document classification.
 
     Parameters
     ----------
-    file: UploadFile = File(...) 
-        Uploaded file.
+    input: ClassifyInputModel
+        Classifier input model.
         
     Return
     ----------
@@ -115,17 +131,17 @@ async def classify(file: UploadFile = File(...), threshold: float = 0.4) -> Clas
         Output with **label** and **score**.
 
     """
-    document = await file.read()
-    document = parse_document(document)
 
-    pred = docs_classifier.predict(document)[0]   
+    pred = docs_classifier.predict(input.text)[0]   
     
-    if pred['score'] < threshold:
+    if pred['score'] < docs_classifier.DEFAULT_THRESHOLD:
         pred['label'] = "Не определен"
     
     return ClassifyOutputModel(label=pred["label"], score=pred["score"])
 
 
 @router.post("/entity-recognize")
-def entity_recognize(input: EntityRecognizeInputModel) -> EntityRecognizeOutputModel:
-    pass
+def entity_recognize(input: EntityRecognizeInputModel) -> List[EntityRecognizeOutputModel]:
+    return [EntityRecognizeOutputModel(
+        label="Город", value="Воронеж", score=1.0, start=0, end=10
+    )]

@@ -1,10 +1,13 @@
 import io
+import traceback
+import requests
 import common.db.utils as db_utils
 
 from fastapi import APIRouter, UploadFile, File
 from pydantic import BaseModel
 
 from common.db.schemes import Document, DocumentInfo, DocumentType, Entity
+from common.parser.utils import parse_document
 
 from fastapi.responses import StreamingResponse
 
@@ -22,11 +25,6 @@ def documents() -> List[Document]:
 @router.get("/document")
 def get_document(document_id: str) -> Document:
     return db_utils.get_document_by_id(document_id, add_file=False)
-
-
-@router.post("/document")
-async def upload_document(info: DocumentInfo, type: DocumentType):
-    pass
 
 
 @router.delete("/document")

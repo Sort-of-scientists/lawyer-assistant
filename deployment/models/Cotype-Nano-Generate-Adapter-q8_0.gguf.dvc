@@ -1,0 +1,5 @@
+outs:
+- md5: 1f27e68b0da1f8f2385ec1f3fa9cb281
+  size: 73886464
+  hash: md5
+  path: Cotype-Nano-Generate-Adapter-q8_0.gguf
