@@ -77,9 +77,7 @@ export const DocumentElement = ({ elem, fetchData }: IDocumentElement): ReactEle
           <StyledButton onClick={onClickEdit} color="default" variant="filled">
             Редактировать
           </StyledButton>
-          <SummaryButton defaultHoverColor={'#f5f5f5'} type={'dashed'}>
-            Сводка
-          </SummaryButton>
+          <SummaryButton type={'dashed'}>Сводка</SummaryButton>
         </ButtonWrapper>
       </InfoWrapper>
       <DeleteWrapper>

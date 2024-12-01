@@ -45,7 +45,6 @@ export const DocumentPage = (): ReactElement => {
                 setChooseFileType={setChooseFileType}
                 placeholder={'Выберете тип'}
                 onCustomSelect={onSelect}
-                suffixIcon={<SearchOutlined />}
               />
             </FilterContainer>
             <StyledButton>Загрузить</StyledButton>

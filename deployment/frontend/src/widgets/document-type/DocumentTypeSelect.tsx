@@ -26,11 +26,11 @@ export const DocumentTypeSelect = ({
 
   useEffect(() => {
     let isMounted = true;
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       try {
         const response = (await axios.get(`${import.meta.env.VITE_API_URL}/types`)).data;
         if (isMounted) {
-          const options = response.map((elem, i) => ({ value: elem }));
+          const options = response.map((elem: string) => ({ value: elem }));
           setFileType(options);
           defaultSelection && setChooseFileType(options[0]);
         }

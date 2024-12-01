@@ -14,6 +14,14 @@ export interface ICreateDocument {
   customFields: Array<{ name: string; value: string }>;
 }
 
+interface FormErrors {
+  seller?: string;
+  buyer?: string;
+  price?: string;
+  subject?: string;
+  customFields?: Array<{ name?: string; value?: string }>;
+}
+
 interface IEditFileModal {
   handleOk: (value: ICreateDocument) => void;
   handleCancel: () => void;
@@ -77,7 +85,6 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
             style={{ textAlign: 'center' }}
             footer={[
               <StyledButton
-                type="submit"
                 onClick={() => {
                   handleSubmit();
                 }}
@@ -133,9 +140,9 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
                         {values.customFields.map((field, index) => (
                           <CustomField key={index}>
                             <StyledCustomField>
-                              {errors.customFields &&
-                                errors.customFields[index] &&
-                                errors.customFields[index].name && (
+                              {errors?.customFields &&
+                                errors?.customFields?.[index] &&
+                                (errors.customFields?.[index] as any)?.name && (
                                   <Error>Кастомные поля обязательны</Error>
                                 )}
                               <BaseInput
@@ -149,7 +156,7 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
                             <StyledCustomField>
                               {errors.customFields &&
                                 errors.customFields[index] &&
-                                errors.customFields[index].value && (
+                                (errors.customFields?.[index] as any)?.value && (
                                   <Error>Кастомные поля обязательны</Error>
                                 )}
                               <BaseInput
@@ -160,9 +167,7 @@ export const CreateFileModal = ({ handleOk, handleCancel, open }: IEditFileModal
                                 value={field.value}
                               />
                             </StyledCustomField>
-                            <RemoveButton onClick={() => remove(index)} type="button">
-                              Удалить
-                            </RemoveButton>
+                            <RemoveButton onClick={() => remove(index)}>Удалить</RemoveButton>
                           </CustomField>
                         ))}
                         <AddButton onClick={() => push({ name: '', value: '' })}>
