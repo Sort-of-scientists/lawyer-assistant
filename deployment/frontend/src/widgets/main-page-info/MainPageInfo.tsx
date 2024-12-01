@@ -11,6 +11,7 @@ import {
   DocumentTypeSelect,
   IChooseFileType,
 } from '@/widgets/document-type/DocumentTypeSelect.tsx';
+import { api } from '@/path.ts';
 
 export const MainPageInfo = (): ReactElement => {
   const [open, setOpen] = useState(false);
@@ -49,7 +50,7 @@ export const MainPageInfo = (): ReactElement => {
     const data = { type: chooseFileType.value, fields: { ...fields }, params };
     void (async (): Promise<void> => {
       await axios
-        .post(`${import.meta.env.VITE_API_URL}/generate`, data)
+        .post(`${api}/generate`, data)
         .then(() => navigate(DOCUMENTS))
         .catch(e => messageApi.error(`Ошибка создания файла: ${e}`));
     })();
@@ -63,7 +64,7 @@ export const MainPageInfo = (): ReactElement => {
           <CreateFileModal handleCancel={handleCancel} open={open} handleOk={handlerEditOnClick} />
           <TextContainer>
             <TitleText>Помощник юриста</TitleText>
-            <Description>Создайте новый документ по шаблону</Description>
+            <Description>Сгенерируйте документ с помощью нейронной сети</Description>
           </TextContainer>
           <SearchContainer>
             <StyledSelect

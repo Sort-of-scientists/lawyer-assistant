@@ -10,6 +10,7 @@ import axios from 'axios';
 import { downloadFile } from '@/shared/utils/utils.ts';
 import { useNavigate } from 'react-router-dom';
 import { EDITOR } from '@/shared/constants/paths.ts';
+import { api } from '@/path.ts';
 
 interface IDocumentElement {
   elem: IDocumentObject;
@@ -28,7 +29,7 @@ export const DocumentElement = ({ elem, fetchData }: IDocumentElement): ReactEle
   const onClickDownload = (): void => {
     void (async (): Promise<void> => {
       const response = (
-        await axios.get(`${import.meta.env.VITE_API_URL}/download?document_id=${elem.id}`, {
+        await axios.get(`${api}/download?document_id=${elem.id}`, {
           responseType: 'blob',
           headers: { 'Content-Type': 'application/json' },
         })
@@ -39,7 +40,7 @@ export const DocumentElement = ({ elem, fetchData }: IDocumentElement): ReactEle
 
   const handleDelete = (): void => {
     void (async (): Promise<void> => {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/document?document_id=${elem.id}`);
+      await axios.delete(`${api}/document?document_id=${elem.id}`);
       await fetchData(true);
     })();
   };

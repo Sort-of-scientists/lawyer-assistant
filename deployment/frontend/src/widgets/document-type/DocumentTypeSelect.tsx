@@ -3,6 +3,7 @@ import { message, SelectProps } from 'antd';
 import axios from 'axios';
 import { BaseSelect } from '@/features/select/BaseSelect.tsx';
 import styled from 'styled-components';
+import { api } from '@/path.ts';
 
 export interface IChooseFileType {
   value: string;
@@ -28,7 +29,7 @@ export const DocumentTypeSelect = ({
     let isMounted = true;
     const fetchData = async (): Promise<void> => {
       try {
-        const response = (await axios.get(`${import.meta.env.VITE_API_URL}/types`)).data;
+        const response = (await axios.get(`${api}/types`)).data;
         if (isMounted) {
           const options = response.map((elem: string) => ({ value: elem }));
           setFileType(options);
