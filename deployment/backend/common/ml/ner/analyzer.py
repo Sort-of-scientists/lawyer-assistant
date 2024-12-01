@@ -18,11 +18,10 @@ class DocEntityRecognizer:
                 'PERSON']
 
     PATTERNS = {
-            'CREDIT_CARD': r'\b(?:\d{4}[\s-]?){3}\d{4}\b',  # Номер кредитной карты
-            'INN': r'\bИНН:\s*(\d{10})\b',  # ИНН (10 цифр)
-            'KPP': r'\bКПП:\s*(\d{9})\b',  # КПП (9 цифр)
-            'MOBILE_PHONE_RUS': r'\bТелефон:\s*((?:\+7|8)\s?\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2})\b'
-        }
+        'CREDIT_CARD': r'\b(?:\d{4}[\s-]?){3}\d{4}\b',
+        'INN': r'\b\d{10}\b',
+        'MOBILE_PHONE_RUS': r'(?:(?:\+7|8)[\s-]?)9\d{2}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}'
+    }
 
     def __init__(self) -> None:
         """
@@ -62,9 +61,8 @@ class DocEntityRecognizer:
         results = []
         for label, pattern in self.PATTERNS.items():
             for match in re.finditer(pattern, text):
-                value = match.group(1) if '(' in pattern else match.group(0)
-                start, end = match.start(1) if '(' in pattern else match.start(), match.end(
-                    1) if '(' in pattern else match.end()
+                value = match.group(0)
+                start, end = match.start(), match.end()
 
                 results.append({
                     'value': value,

@@ -52,18 +52,17 @@ class FlairRecognizer:
         pass
 
     # Class to use Flair with Presidio as an external recognizer.
-    def analyze(self, text: str, entities: List[str]):
+    def analyze(self, text: str):
         """
         Analyze text using Text Analytics.
 
         :param text: The text for analysis.
-        :param entities: Not working properly for this recognizer.
         :return: predictions
         """
 
         results = []
-        split_symbol = "\n\n"
-        texts = text.split(split_symbol)
+        split_symbol = "\n"
+        texts = text.replace('\n', "").split(split_symbol)
         sentences = [Sentence(text, use_tokenizer=CustomTokenizer()) for text in texts]
 
         self.model.predict(sentences, verbose=True)
