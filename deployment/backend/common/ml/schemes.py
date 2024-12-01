@@ -56,19 +56,6 @@ class GenerateInputModel(BaseModel):
     params: SamplingParams
 
 
-class ClassifyInputModel(BaseModel):
-    """
-    A model to represent input to **/classify** method.
-
-    Attributes
-    ----------
-    text : str
-        Text to classify.   
-    """
-    
-    text: str
-
-
 class ClassifyOutputModel(BaseModel):
     """
     A model to represent output from **/classify** method.
@@ -84,16 +71,6 @@ class ClassifyOutputModel(BaseModel):
     
     label: str
     score: float
-
-
-class EntityRecognizeInputModel(BaseModel):
-    """
-    A model to represent input to **/entity-recognize** method.
-
-    Attributes
-    ----------
-    """
-    text: str
 
 
 class EntityRecognizeResult(BaseModel):
@@ -123,15 +100,4 @@ class EntityRecognizeResult(BaseModel):
     start: int
     end: int
 
-
-class EntityRecognizeOutputModel(BaseModel):
-    """
-    A model to represent the output from the **/entity-recognize** method.
-
-    Attributes
-    ----------
-    recognizer_result : List[EntityRecognizeResult]
-        A list of recognized entities and their associated details from the input text.
-    """
-    recognizer_result: List  # [EntityRecognizeResult]
 

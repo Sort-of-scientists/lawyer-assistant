@@ -5,7 +5,7 @@ services:
       - 8080:8080
     volumes:
       - ./models:/models
-    command: --lora /models/Cotype-Nano-Generate-Adapter-q8_0.gguf --lora /models/Cotype-Nano-Generate-Adapter-q8_0.gguf
+    command: --lora /models/Cotype-Nano-Generate-Adapter-q8_0.gguf --lora /models/Cotype-Nano-Summary-Adapter-q8_0.gguf
     environment:
       LLAMA_ARG_MODEL: /models/Cotype-Nano.Q8_0.gguf
       LLAMA_ARG_CTX_SIZE: 2048
@@ -22,8 +22,8 @@ services:
       - MONGO_DATABASE=database
       - MONGO_COLLECTION=documents
 
-      - SUMMARY_LORA_ADAPTER_ID=0
-      - GENERATE_LORA_ADAPTER_ID=1
+      - SUMMARY_LORA_ADAPTER_ID=1
+      - GENERATE_LORA_ADAPTER_ID=0
     depends_on:
       - tika
       - mongodb

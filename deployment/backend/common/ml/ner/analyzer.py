@@ -78,6 +78,7 @@ class DocEntityRecognizer:
         for entity in result:
             entity_text = text[entity.start: entity.end]
             entity_list.append({"value": entity_text,
+                                "score": entity.score,
                                 "label": entity.entity_type,
                                 "start": entity.start,
                                 "end": entity.end})
