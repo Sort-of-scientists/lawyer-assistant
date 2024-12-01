@@ -28,18 +28,9 @@ class FlairRecognizer:
     }
 
     def __init__(
-            self,
-            supported_language: str = "en",
-            supported_entities: Optional[List[str]] = None,
-            check_label_groups: Optional[Tuple[Set, Set]] = None,
+            self
     ):
         self.model = SequenceTagger.load("./models/final-model.pt")
-
-        self.check_label_groups = (
-            check_label_groups if check_label_groups else self.CHECK_LABEL_GROUPS
-        )
-
-        supported_entities = supported_entities if supported_entities else self.ENTITIES
 
     def load(self) -> None:
         """Load the model, not used. Model is loaded during initialization."""
