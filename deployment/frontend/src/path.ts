@@ -1,1 +1,3 @@
-export const api = `${window.location.host}/api`;
+export const api = `/api`;
+
+console.log('api', api);
