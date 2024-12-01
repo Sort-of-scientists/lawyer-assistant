@@ -1,4 +1,5 @@
 FROM node:22.9.0
+
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -10,5 +11,6 @@ COPY . .
 RUN npm run build
 
 EXPOSE 3000
-CMD npm run start
-ENTRYPOINT ["top", "-b"]
+
+# Set CMD for running your application
+CMD ["npm", "run", "start"]

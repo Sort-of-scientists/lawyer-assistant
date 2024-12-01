@@ -10,6 +10,16 @@ services:
       LLAMA_ARG_MODEL: /models/Cotype-Nano.Q8_0.gguf
       LLAMA_ARG_CTX_SIZE: 2048
       LLAMA_ARG_PORT: 8080
+      
+  frontend:
+      container_name: frontend
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      environment:
+        - VITE_API_URL=http://0.0.0.0:8000
+      ports:
+        - 3000:3000
 
   backend:
     build:
