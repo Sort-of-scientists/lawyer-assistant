@@ -7,6 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import { DOCUMENTS } from '@/shared/constants/paths.ts';
 import { BaseSelect } from '@/features/select/BaseSelect.tsx';
 import axios from 'axios';
+import {
+  DocumentTypeSelect,
+  IChooseFileType,
+} from '@/widgets/document-type/DocumentTypeSelect.tsx';
 
 export const MainPageInfo = (): ReactElement => {
   const [open, setOpen] = useState(false);
@@ -14,28 +18,8 @@ export const MainPageInfo = (): ReactElement => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
 
-  const [fileType, setFileType] = useState<SelectProps['options']>([]);
-  const [chooseFileType, setChooseFileType] = useState<{ value: string }>({ value: 'Загрузка' });
-  console.log('chooseFileType', chooseFileType);
-  useEffect(() => {
-    let isMounted = true;
-    const fetchData = async () => {
-      try {
-        const response = (await axios.get(`${import.meta.env.VITE_API_URL}/types`)).data;
-        if (isMounted) {
-          const options = response.map((elem, i) => ({ value: elem }));
-          setFileType(options);
-          setChooseFileType(options[0]);
-        }
-      } catch (e) {
-        messageApi.error(`Ошибка загрузки: ${e}`);
-      }
-    };
-    void fetchData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const [chooseFileType, setChooseFileType] = useState<IChooseFileType>({ value: 'Загрузка' });
+
   const handleCancel = () => {
     setOpen(false);
   };
@@ -83,10 +67,10 @@ export const MainPageInfo = (): ReactElement => {
           </TextContainer>
           <SearchContainer>
             <StyledSelect
-              options={fileType}
-              onSelect={v => setChooseFileType({ value: v })}
-              value={chooseFileType}
+              chooseFileType={chooseFileType}
+              setChooseFileType={setChooseFileType}
               placeholder={'Купли-продажи'}
+              defaultSelection={true}
             />
             <StyledButton onClick={showModal}>Вперед!</StyledButton>
           </SearchContainer>
@@ -151,10 +135,9 @@ const SearchContainer = styled.div`
   gap: 12px;
 `;
 
-const StyledSelect = styled(BaseSelect)`
+const StyledSelect = styled(DocumentTypeSelect)`
+  width: 80%;
   height: 40px;
-  width: 70%;
-  border-radius: 8px;
 `;
 
 const StyledButton = styled(Button)`

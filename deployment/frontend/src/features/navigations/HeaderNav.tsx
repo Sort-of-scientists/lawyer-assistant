@@ -1,4 +1,4 @@
-import React, { Dispatch, type ReactElement, SetStateAction } from 'react';
+import React, { type ReactElement } from 'react';
 import styled, { css } from 'styled-components';
 import { IHeaderNavbarData } from '@/shared/data/header-navbar.data.ts';
 import { useNavigate } from 'react-router-dom';

@@ -1,11 +1,15 @@
-import React, { type ReactElement } from 'react';
+import React, { type ReactElement, useState } from 'react';
 import { PageTitle } from '@/features/page-title/PageTitle.tsx';
 import { DocumentsMenu } from '@/widgets/document-page/DocumentsMenu.tsx';
 import styled from 'styled-components';
-import { BaseRoundSelect } from '@/features/select/BaseRoundSelect.tsx';
 import { SearchOutlined } from '@ant-design/icons';
+import {
+  DocumentTypeSelect,
+  IChooseFileType,
+} from '@/widgets/document-type/DocumentTypeSelect.tsx';
 
 export const DocumentPage = (): ReactElement => {
+  const [chooseFileType, setChooseFileType] = useState<IChooseFileType>({ value: 'Выберете тип' });
   return (
     <>
       <PageTitle>Документы</PageTitle>
@@ -13,7 +17,12 @@ export const DocumentPage = (): ReactElement => {
         <Wrapper>
           <Title>Ваши документы</Title>
           <FilterContainer>
-            <BaseRoundSelect placeholder={'Выберете тип'} suffixIcon={<SearchOutlined />} />
+            <DocumentTypeSelect
+              chooseFileType={chooseFileType}
+              setChooseFileType={setChooseFileType}
+              placeholder={'Выберете тип'}
+              suffixIcon={<SearchOutlined />}
+            />
           </FilterContainer>
           <DocumentsMenu />
         </Wrapper>
@@ -26,7 +35,9 @@ const FilterContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  width: 100%;
+  width: 20%;
+  height: 40px;
+  align-self: flex-start;
 `;
 const Wrapper = styled.div`
   padding-top: 2%;
