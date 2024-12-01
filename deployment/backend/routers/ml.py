@@ -19,6 +19,7 @@ from common.db.schemes import *
 
 from common.db.utils import *
 from common.ml.ner import DocEntityRecognizer
+from common.ml.utils import DocsClassifier
 
 router = APIRouter()
 

@@ -6,5 +6,4 @@ pymongo==4.10.1
 transformers==4.46.3
 tika==2.6.0
 python-multipart==0.0.18
-presidio-analyzer==2.2.355
 flair==0.14.0
