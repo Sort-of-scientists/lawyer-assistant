@@ -4,7 +4,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./models:/models
+      - ./backend/models:/models
     command: --lora /models/Cotype-Nano-Generate-Adapter-q8_0.gguf --lora /models/Cotype-Nano-Summary-Adapter-q8_0.gguf
     environment:
       LLAMA_ARG_MODEL: /models/Cotype-Nano.Q8_0.gguf
