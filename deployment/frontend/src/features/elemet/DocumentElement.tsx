@@ -13,14 +13,14 @@ import { EDITOR } from '@/shared/constants/paths.ts';
 
 interface IDocumentElement {
   elem: IDocumentObject;
-  fetchData: (isMounted?: boolean) => Promise<void>;
+  fetchData: (...args) => Promise<void>;
 }
 export const DocumentElement = ({ elem, fetchData }: IDocumentElement): ReactElement => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
-  useEffect(() => {
+  useEffect((): void => {
     if (loading) {
       void messageApi.loading({ content: 'Скачивание файла', duration: 9000 });
     }
@@ -82,11 +82,11 @@ export const DocumentElement = ({ elem, fetchData }: IDocumentElement): ReactEle
           </SummaryButton>
         </ButtonWrapper>
       </InfoWrapper>
-      <DeleteWrapper onClick={handleDelete}>
-        <DeleteOutlined />
+      <DeleteWrapper>
+        <DeleteOutlined onClick={handleDelete} />
       </DeleteWrapper>
-      <DownloadWrapper onClick={onClickDownload}>
-        <CloudDownloadOutlined />
+      <DownloadWrapper>
+        <CloudDownloadOutlined onClick={onClickDownload} />
       </DownloadWrapper>
     </DocumentWrapper>
   );

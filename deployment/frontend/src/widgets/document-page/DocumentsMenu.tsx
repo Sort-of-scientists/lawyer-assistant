@@ -6,22 +6,11 @@ import axios from 'axios';
 import { message } from 'antd';
 import { IDocumentObject } from '@/shared/interfaces/document.interface.ts';
 
-export const DocumentsMenu = (): ReactElement => {
-  const [messageApi, contextHolder] = message.useMessage();
-  const [documents, setDocument] = useState<IDocumentObject[]>([]);
-  const fetchData = async (isMounted?: boolean): Promise<void> => {
-    try {
-      const response: IDocumentObject[] = (
-        await axios.get(`${import.meta.env.VITE_API_URL}/documents`)
-      ).data;
-      if (isMounted) {
-        setDocument(response);
-      }
-    } catch (e) {
-      messageApi.error(`Ошибка загрузки: ${e}`);
-    }
-  };
-
+interface IDocumentsMenu {
+  fetchData: (...args) => Promise<void>;
+  documents: IDocumentObject[];
+}
+export const DocumentsMenu = ({ fetchData, documents }: IDocumentsMenu): ReactElement => {
   useEffect(() => {
     let isMounted = true;
     void fetchData(isMounted);
@@ -32,7 +21,6 @@ export const DocumentsMenu = (): ReactElement => {
 
   return (
     <Wrapper>
-      {contextHolder}
       {documents?.length > 0
         ? documents?.map((elem: IDocumentObject) => (
             <DocumentElement fetchData={fetchData} key={elem.id} elem={elem} />

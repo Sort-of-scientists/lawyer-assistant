@@ -12,12 +12,14 @@ interface IDocumentTypeSelect {
   setChooseFileType: Dispatch<SetStateAction<IChooseFileType>>;
   placeholder: string;
   defaultSelection?: boolean;
+  onCustomSelect?: (v: IChooseFileType) => void;
 }
 export const DocumentTypeSelect = ({
   chooseFileType,
   placeholder,
   setChooseFileType,
   defaultSelection,
+  onCustomSelect,
 }: IDocumentTypeSelect): ReactElement => {
   const [fileType, setFileType] = useState<SelectProps['options']>([]);
   const [messageApi, contextHolder] = message.useMessage();
@@ -45,7 +47,10 @@ export const DocumentTypeSelect = ({
   return (
     <StyledSelect
       options={fileType}
-      onSelect={v => setChooseFileType({ value: v })}
+      onSelect={v => {
+        onCustomSelect?.(v);
+        setChooseFileType({ value: v });
+      }}
       value={chooseFileType}
       placeholder={placeholder}
     >

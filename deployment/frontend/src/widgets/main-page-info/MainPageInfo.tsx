@@ -43,7 +43,7 @@ export const MainPageInfo = (): ReactElement => {
     }
 
     const params = {
-      n_predict: 400,
+      n_predict: 2000,
       temperature: 0.01,
     };
     const data = { type: chooseFileType.value, fields: { ...fields }, params };

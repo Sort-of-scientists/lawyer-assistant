@@ -7,11 +7,33 @@ import {
   DocumentTypeSelect,
   IChooseFileType,
 } from '@/widgets/document-type/DocumentTypeSelect.tsx';
+import { IDocumentObject } from '@/shared/interfaces/document.interface.ts';
+import axios from 'axios';
+import { message } from 'antd';
 
 export const DocumentPage = (): ReactElement => {
   const [chooseFileType, setChooseFileType] = useState<IChooseFileType>({ value: 'Выберете тип' });
+  const [messageApi, contextHolder] = message.useMessage();
+  const [documents, setDocument] = useState<IDocumentObject[]>([]);
+  const fetchData = async (
+    isMounted?: boolean,
+    url = `${import.meta.env.VITE_API_URL}/documents`,
+  ): Promise<void> => {
+    try {
+      const response: IDocumentObject[] = (await axios.get(url)).data;
+      if (isMounted) {
+        setDocument(response);
+      }
+    } catch (e) {
+      messageApi.error(`Ошибка загрузки: ${e}`);
+    }
+  };
+  const onSelect = (v: IChooseFileType) => {
+    void fetchData(true, `${import.meta.env.VITE_API_URL}/documents`);
+  };
   return (
     <>
+      {contextHolder}
       <PageTitle>Документы</PageTitle>
       <Container>
         <Wrapper>
@@ -21,10 +43,11 @@ export const DocumentPage = (): ReactElement => {
               chooseFileType={chooseFileType}
               setChooseFileType={setChooseFileType}
               placeholder={'Выберете тип'}
+              onCustomSelect={onSelect}
               suffixIcon={<SearchOutlined />}
             />
           </FilterContainer>
-          <DocumentsMenu />
+          <DocumentsMenu fetchData={fetchData} documents={documents} />
         </Wrapper>
       </Container>
     </>
