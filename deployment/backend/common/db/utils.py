@@ -18,25 +18,29 @@ database = client[os.environ.get("MONGO_DATABASE")]
 collection = database[os.environ.get("MONGO_COLLECTION")]
 
 
-def upload_document(document: Document):
+def upload_document(document: Document) -> str:
     """
     Upload new document in bytes to collection.
 
     Parameters
     ----------
-    collection : Collection
-
-    document_as_bytes : bytes
+    document : Document
     """
 
-    collection.insert_one(document={
-        "file": document.file,
-        "info": document.info.model_dump(),
-        "type": document.type.model_dump(),
-        "entities": [ent.model_dump() for ent in document.entities],
-        "timestamp": datetime.now()
-    })
+    try:
+        collection.insert_one(document={
+            "file": document.file,
+            "name": document.name,
+            "info": document.info.model_dump(),
+            "type": document.type.model_dump(),
+            "entities": [ent.model_dump() for ent in document.entities],
+            "timestamp": datetime.now()
+        })
 
+        return "OK!"
+
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload document: {e}")
 
 def delete_document(document_id: str):
     """
@@ -59,13 +63,14 @@ def delete_document(document_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to delete document from database: {e}")
 
 
-def get_all_documents_without_bytes() -> List[Document]:
+def get_all_documents_without_bytes(filter_by_type: str = None) -> List[Document]:
     """
     Return all documents from collection.
 
     Parameters
     ----------
-    collection : Collection
+    filter_by_type : str | None = None
+        If str, use filter by document type. If None, returns all documents.
 
     Returns
     -------
@@ -74,10 +79,15 @@ def get_all_documents_without_bytes() -> List[Document]:
 
     documents = []
 
-    for document in collection.find({}, {"file": 0}).sort({"timestamp": -1}):
+    filters = {}
+    if filter_by_type is not None:
+        filters = {"type": filter_by_type}
+    
+    for document in collection.find(filters, {"file": 0}).sort({"timestamp": -1}):
         documents.append(
             Document(
                 id=str(document["_id"]),
+                name=document["name"],
                 info=DocumentInfo(
                     header=document["info"]["header"],
                     description=document["info"]["description"]
@@ -117,5 +127,32 @@ def get_document_by_id(document_id: str, add_file: bool = False) -> Document:
 
         return document[0]
     
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get document with id {document_id}: {e}")
+    
+
+def update_document(document_id: str, new_document: Document) -> str:
+    """
+    Update document in MongoDB by **document_id**.
+
+    Parameters
+    ----------
+    document_id : str
+
+    document : Document
+
+    Returns
+    -------
+    str
+    """
+
+    try:
+        collection.update_one(
+            {"_id": ObjectId(document_id)},
+            {"$set": new_document.model_dump()}
+        )
+
+        return "OK!"
+
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Failed to get document with id {document_id}: {e}")

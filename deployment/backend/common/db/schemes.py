@@ -64,6 +64,9 @@ class Document(BaseModel):
 
     Attributes
     ----------
+    id : str
+    
+    name : str
     file : bytes
     info : DocumentInfo
 
@@ -72,8 +75,9 @@ class Document(BaseModel):
     """
     id: str | None = None
 
+    name: str | None = None
     file: bytes | None = None
-    info: DocumentInfo
+    info: DocumentInfo | None = None
 
-    type: DocumentType
-    entities: List[Entity]
+    type: DocumentType | None = None
+    entities: List[Entity] | None = None

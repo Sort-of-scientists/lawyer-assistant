@@ -8,7 +8,7 @@ from tika import parser
 TIKA_ENDPOINT = "http://tika:9998/tika"
 
 
-def text_to_docx_bytes(text: str) -> bytes:
+def text_to_docx_bytes(text: str, md: bool = True) -> bytes:
     """
     Converts a markdown-formatted string into a .docx document and returns it as bytes.
 
@@ -28,7 +28,10 @@ def text_to_docx_bytes(text: str) -> bytes:
 
     doc = Document()
     
-    parse_markdown(doc, text)
+    if md:
+        parse_markdown(doc, text)
+    else:
+        doc.add_paragraph(text)
     
     byte_stream = io.BytesIO()
     

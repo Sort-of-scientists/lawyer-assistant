@@ -63,14 +63,10 @@ class ClassifyInputModel(BaseModel):
     Attributes
     ----------
     text : str
-        Text to classify.
-        
-    thereshold : float    
-        Classification reliability threshold.    
+        Text to classify.   
     """
     
     text: str
-    thereshold: float
 
 
 class ClassifyOutputModel(BaseModel):
@@ -97,7 +93,7 @@ class EntityRecognizeInputModel(BaseModel):
     Attributes
     ----------
     """
-    pass
+    text: str
 
 
 class EntityRecognizeResult(BaseModel):
@@ -138,3 +134,4 @@ class EntityRecognizeOutputModel(BaseModel):
         A list of recognized entities and their associated details from the input text.
     """
     recognizer_result: List  # [EntityRecognizeResult]
+
