@@ -41,12 +41,6 @@ class FlairRecognizer:
 
         supported_entities = supported_entities if supported_entities else self.ENTITIES
 
-        super().__init__(
-            supported_entities=supported_entities,
-            supported_language=supported_language,
-            name="Flair Analytics",
-        )
-
     def load(self) -> None:
         """Load the model, not used. Model is loaded during initialization."""
         pass
