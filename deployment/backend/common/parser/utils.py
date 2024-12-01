@@ -1,6 +1,8 @@
 import io
 from docx import Document
 from docx.text.paragraph import Paragraph
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import RGBColor
 
 from typing import Any
 from tika import parser
@@ -19,6 +21,9 @@ def text_to_docx_bytes(text: str, md: bool = True) -> bytes:
     ----------
     text : str
         Content of document.
+    md : bool, optional
+        If set to 'True' (default), the text is interpreted as Markdown and parsed accordingly.
+        If 'False', the text is added as a single paragraph without any special formatting.
 
     Returns
     -------
@@ -39,6 +44,34 @@ def text_to_docx_bytes(text: str, md: bool = True) -> bytes:
     
     byte_stream.seek(0)
     return byte_stream.getvalue()
+
+
+def add_heading_with_style(doc: Document, text: str, level: int) -> Paragraph:
+    """
+    Adds a heading to the document with specified level, aligns it to the center,
+    and sets its font color to black.
+
+    Parameters
+    ----------
+    doc : Document 
+        The document object where the heading will be added.
+    text : str 
+        The text content of the heading.
+    level : int 
+        The level of the heading (e.g., 1 for H1, 2 for H2, etc.).
+
+    Returns
+    ----------
+    heading : Paragraph 
+        A paragraph object representing the newly added heading.
+    """
+    
+    heading = doc.add_heading(text, level=level)
+    heading.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    for run in heading.runs:
+        run.font.color.rgb = RGBColor(0, 0, 0)
+    
+    return heading
 
 
 def add_formatted_paragraph(doc: Document, text: str) -> Paragraph:
@@ -82,16 +115,14 @@ def add_formatted_paragraph(doc: Document, text: str) -> Paragraph:
             prg.add_run(text[i])
             i += 1
             
+    prg.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    
     return prg
 
 
 def parse_markdown(doc: Document, markdown_text: str):    
     """
     Parses a markdown-formatted string and adds the content to the given Document object.
-
-    The function supports the following markdown formatting:
-    - Headers (using # to ####)
-    - Bold and italic text (using ** for bold and * for italic)
 
     Parameters
     ----------
@@ -102,16 +133,13 @@ def parse_markdown(doc: Document, markdown_text: str):
     """
     
     lines = markdown_text.split('\n')
-    
+
     for line in lines:
-        if line.startswith('# '):
-            doc.add_heading(line[2:], level=1)
-        elif line.startswith('## '):
-            doc.add_heading(line[3:], level=2)
-        elif line.startswith('### '):
-            doc.add_heading(line[4:], level=3)
-        elif line.startswith('#### '):
-            doc.add_heading(line[5:], level=4)
+        
+        if line.startswith('#'):
+            level = line.count('#')
+            text = line[level + 1:].strip() 
+            add_heading_with_style(doc, text, level)
         else:
             add_formatted_paragraph(doc, line)
 

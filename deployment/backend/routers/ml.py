@@ -6,6 +6,8 @@ import base64
 import common.ml.utils as ml_utils
 import common.db.utils as db_utils
 
+from urllib.parse import quote
+
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import StreamingResponse
 
@@ -59,7 +61,7 @@ async def generate(input: GenerateInputModel) -> StreamingResponse:
     ml_utils.change_current_lora_adapter(adapter_id=int(os.environ.get("GENERATE_LORA_ADAPTER_ID")))
 
     # prompt to LLM
-    prompt = json.dumps(input.fields, ensure_ascii=False)
+    prompt = json.dumps({"Тип документа": input.type} | input.fields, ensure_ascii=False)
     prompt = SYSTEM_PROMPT.format(prompt, "")
     
     # generate document based on fields:
@@ -79,7 +81,7 @@ async def generate(input: GenerateInputModel) -> StreamingResponse:
             type=DocumentType(
                 label=input.type, score=1.0
             ),
-            entities=[Entity(label=key, value=value) for key, value in input.fields.items()]
+            entities=[]
         )
     )
 
@@ -87,18 +89,20 @@ async def generate(input: GenerateInputModel) -> StreamingResponse:
     file_like_document = io.BytesIO(document_as_byte)
     file_like_document.seek(0)
 
-    return StreamingResponse(file_like_document, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", headers={"Content-Disposition": "attachment; filename=document.docx"})
+    filename = quote(input.type, encoding='utf-8')
+
+    return StreamingResponse(file_like_document, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", headers={"Content-Disposition": f"attachment; filename={filename}.docx"})
 
 
 @router.post("/summarize")
-async def summarize(file: UploadFile = File(...), n_sentences_to_keep: int = 2, n_predict: int = 300, temperature: float = 0.8) -> str:
+def summarize(document_id: str, n_sentences_to_keep: int = 2, n_predict: int = 300, temperature: float = 0.8) -> str:
     """
     A route to make a summary of the input text.
 
     Parameters
     ----------
-    file : UploadFile = File(...),
-        Uploaded file to summarize.
+    document_id : str
+        Document ID to summarize,
 
     n_sentences_to_keep : int, optional
         Number of sentences to keep in result summary,
@@ -111,12 +115,14 @@ async def summarize(file: UploadFile = File(...), n_sentences_to_keep: int = 2, 
     """
     ml_utils.change_current_lora_adapter(adapter_id=int(os.environ.get("SUMMARY_LORA_ADAPTER_ID")))
 
+    # get document from database
+    document = db_utils.get_document_by_id(document_id=document_id, add_file=True)
     # parse document
-    document = await file.read()
-    document = parse_document(document)
-
+    document = parse_document(document["file"])
     # preprocess input text
     text = ml_utils.get_preprocessed_text(text=document)
+    # apply a system prompt 
+    text = SYSTEM_PROMPT.format(text, "")
     # make request to llama.cpp server
     summary = ml_utils.get_completion(prompt=text, params={"n_predict": n_predict, "temperature": temperature})
     # reduce summary
@@ -151,14 +157,12 @@ def classify(text: str) -> ClassifyOutputModel:
 
 
 @router.post("/entity-recognize")
-async def entity_recognize(file: UploadFile = File(...)) -> List: #List[EntityRecognizeResult]:
-    document = await file.read()
-    document: str = parse_document(document)
-
-    recognizer_result = docs_ner.predict(document)
+def entity_recognize(text: str) -> List[EntityRecognizeResult]:
+    recognizer_result = docs_ner.predict(text)
+    
+    recognizer_result = [EntityRecognizeResult(**res) for res in recognizer_result]
+    
     return recognizer_result
-    # return [EntityRecognizeResult(**recognizer) for recognizer in recognizer_result]
-    # return EntityRecognizeOutputModel(recognizer_result=recognizer_result)
 
 
 @router.post("/upsert")

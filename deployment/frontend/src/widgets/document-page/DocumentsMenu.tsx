@@ -1,14 +1,31 @@
-import React, { type ReactElement } from 'react';
+import React, { type ReactElement, useEffect, useState } from 'react';
 import { DocumentElement } from '@/features/elemet/DocumentElement.tsx';
 import styled from 'styled-components';
 import { documentData } from '@/shared/data/document.data.ts';
+import axios from 'axios';
+import { message } from 'antd';
+import { IDocumentObject } from '@/shared/interfaces/document.interface.ts';
 
-export const DocumentsMenu = (): ReactElement => {
+interface IDocumentsMenu {
+  fetchData: (...args) => Promise<void>;
+  documents: IDocumentObject[];
+}
+export const DocumentsMenu = ({ fetchData, documents }: IDocumentsMenu): ReactElement => {
+  useEffect(() => {
+    let isMounted = true;
+    void fetchData(isMounted);
+    return (): void => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <Wrapper>
-      {documentData.map(elem => (
-        <DocumentElement key={elem.id} elem={elem} />
-      ))}
+      {documents?.length > 0
+        ? documents?.map((elem: IDocumentObject) => (
+            <DocumentElement fetchData={fetchData} key={elem.id} elem={elem} />
+          ))
+        : 'У вас нет документов'}
     </Wrapper>
   );
 };
