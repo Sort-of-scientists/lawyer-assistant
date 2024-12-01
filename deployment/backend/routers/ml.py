@@ -6,6 +6,8 @@ import base64
 import common.ml.utils as ml_utils
 import common.db.utils as db_utils
 
+from urllib.parse import quote
+
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import StreamingResponse
 
@@ -59,7 +61,7 @@ async def generate(input: GenerateInputModel) -> StreamingResponse:
     ml_utils.change_current_lora_adapter(adapter_id=int(os.environ.get("GENERATE_LORA_ADAPTER_ID")))
 
     # prompt to LLM
-    prompt = json.dumps(input.fields, ensure_ascii=False)
+    prompt = json.dumps({"Тип документа": input.type} | input.fields, ensure_ascii=False)
     prompt = SYSTEM_PROMPT.format(prompt, "")
     
     # generate document based on fields:
@@ -79,7 +81,7 @@ async def generate(input: GenerateInputModel) -> StreamingResponse:
             type=DocumentType(
                 label=input.type, score=1.0
             ),
-            entities=[Entity(label=key, value=value) for key, value in input.fields.items()]
+            entities=[]
         )
     )
 
@@ -87,7 +89,9 @@ async def generate(input: GenerateInputModel) -> StreamingResponse:
     file_like_document = io.BytesIO(document_as_byte)
     file_like_document.seek(0)
 
-    return StreamingResponse(file_like_document, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", headers={"Content-Disposition": "attachment; filename=document.docx"})
+    filename = quote(input.type, encoding='utf-8')
+
+    return StreamingResponse(file_like_document, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", headers={"Content-Disposition": f"attachment; filename={filename}.docx"})
 
 
 @router.post("/summarize")
