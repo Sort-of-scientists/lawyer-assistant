@@ -1,5 +1,0 @@
-outs:
-- md5: e6623bb5d67d2bbee6466df778a9f0d4
-  size: 3412576
-  hash: md5
-  path: Vikhr-Llama-3.2-1B-Instruct-Generate-Adapter-q8_0.gguf

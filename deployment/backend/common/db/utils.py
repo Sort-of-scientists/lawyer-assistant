@@ -38,6 +38,8 @@ def upload_document(document: Document):
             "timestamp": datetime.now()
         })
 
+        return "OK!"
+
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload document: {e}")
 

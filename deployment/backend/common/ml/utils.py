@@ -191,6 +191,8 @@ class DocsClassifier:
     Attributes:
         classifier: An object for performing classification based on the specified model and tokenizer.    
     """
+
+    DEFAULT_THRESHOLD: float = 0.4
     
     def __init__(self, model_path: str, tokenizer_path: str):
         """
