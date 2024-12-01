@@ -14,7 +14,7 @@ export const MainRouter = (): ReactElement => {
         <Route path={DOCUMENTS} element={<DocumentPage />} />
         <Route path={EDITOR} element={<EditorPage />} />
 
-        <Route path={ROOT} element={<Navigate to={DOCUMENTS} />} />
+        <Route path={ROOT} element={<Navigate to={MAIN} />} />
       </Route>
 
       <Route path="*" element={<Navigate to={MAIN} />} />
