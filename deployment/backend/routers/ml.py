@@ -17,11 +17,15 @@ from common.parser.utils import parse_document, text_to_docx_bytes
 
 from common.db.schemes import *
 
+from common.db.utils import *
+from common.ml.ner import DocEntityRecognizer
 
 router = APIRouter()
 
 # initialize the document classifier
-docs_classifier = ml_utils.DocsClassifier(model_path="models/docs-classifier", tokenizer_path="models/docs-classifier")
+
+docs_classifier = DocsClassifier(model_path="models/docs-classifier", tokenizer_path="models/docs-classifier")
+docs_ner = DocEntityRecognizer()
 
 
 SYSTEM_PROMPT = """Ты — ИИ-помощник. Тебе дано задание: необходимо сгенерировать подробный и развернутый ответ.
@@ -34,6 +38,7 @@ SYSTEM_PROMPT = """Ты — ИИ-помощник. Тебе дано задан�
 
 ### Ответ:
 {}"""
+
 
 
 @router.post("/generate")
@@ -145,10 +150,14 @@ def classify(text: str) -> ClassifyOutputModel:
 
 
 @router.post("/entity-recognize")
-def entity_recognize(text: str) -> List[EntityRecognizeOutputModel]:    
-    return [EntityRecognizeOutputModel(
-        label="Город", value="Воронеж", score=1.0, start=0, end=10
-    )]
+async def entity_recognize(file: UploadFile = File(...)) -> List: #List[EntityRecognizeResult]:
+    document = await file.read()
+    document: str = parse_document(document)
+
+    recognizer_result = docs_ner.predict(document)
+    return recognizer_result
+    # return [EntityRecognizeResult(**recognizer) for recognizer in recognizer_result]
+    # return EntityRecognizeOutputModel(recognizer_result=recognizer_result)
 
 
 @router.post("/upsert")
