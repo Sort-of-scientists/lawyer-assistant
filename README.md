@@ -9,8 +9,8 @@
 4. Установить ```dvc``` для загрузки моделей с нашего S3:
    ```pip install dvc dvc-s3```
 5. Установить ключ и токен от нашего S3:
-   - ```dvc remote modify --local storage access_key_id YCAJEk1Dap7upINca7OgHQ2MM```
-   - ```dvc remote modify --local storage secret_access_key YCMEeVSyCwieGkX2JfbJWRnrnhzpHjsmej4OqUXb```
+   - ```dvc remote modify --local storage access_key_id <access_key_id>```
+   - ```dvc remote modify --local storage secret_access_key <secret_access_key>```
 6. Скачать модели:
    - ```dvc pull```
 7. Перейти в папку deployment и собрать приложение:
